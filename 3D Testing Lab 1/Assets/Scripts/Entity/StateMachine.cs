@@ -13,13 +13,12 @@ public class StateMachine : MonoBehaviour
 	[SerializeField] Rigidbody _myRigidbody = null;
 	public Rigidbody myRigidbody => _myRigidbody;
 
-	Dictionary<string, State> States = new Dictionary<string, State>();
-	State currentState = null;
-	string _previousState = "";
+	protected Dictionary<string, State> States = new Dictionary<string, State>();
+	protected State currentState = null;
+	protected string _previousState = "";
 	public string previousState { get { return _previousState; } }
 
-
-	protected virtual void Start()
+	protected virtual void Awake()
     {
         
     }
@@ -28,12 +27,14 @@ public class StateMachine : MonoBehaviour
     {
 		if (currentState != null)
 			currentState.UpdateState();
+		//Debug.Log(currentState.StateName);
 	}
 
 	protected virtual void FixedUpdate()
 	{
 		currentState.FixedUpdateState();
 		myRigidbody.MovePosition(myRigidbody.position + (currentState.MotionUpdate() * Time.fixedDeltaTime));
+		myStatus.currentMovement = currentState.MotionUpdate() * Time.fixedDeltaTime;
 	}
 
 	protected void SwitchState(State newState)

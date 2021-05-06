@@ -4,8 +4,15 @@ using UnityEngine;
 
 public class PlayerSM : StateMachine
 {
-	protected override void Start()
+	protected override void Awake()
 	{
-		base.Start();
+		base.Awake();
+
+		States.Add("Idle", new Player_IdleState("Idle", this));
+		States.Add("Move", new Player_MoveState("Move", this));
+
+		currentState = States["Idle"];
+		_previousState = currentState.StateName;
+		currentState.StartState();
 	}
 }

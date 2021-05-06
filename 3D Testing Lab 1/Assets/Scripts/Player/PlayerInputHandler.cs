@@ -9,6 +9,7 @@ public class PlayerInputHandler : InputHandler
 
 	private void Awake()
 	{
+		playerControls = new PlayerControls();
 		inputs.Add("Jump", Button.Up);
 	}
 
@@ -17,6 +18,8 @@ public class PlayerInputHandler : InputHandler
 		playerControls.Enable();
 
 		playerControls.InGameActions.Movement.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
+		playerControls.InGameActions.Movement.canceled += ctx => moveInput = ctx.ReadValue<Vector2>();
+
 		playerControls.InGameActions.Action1.started += ctx => inputs["Jump"] = Button.Down;
 		playerControls.InGameActions.Action1.performed += ctx => inputs["Jump"] = Button.Hold;
 		playerControls.InGameActions.Action1.canceled += ctx => inputs["Jump"] = Button.Up;
