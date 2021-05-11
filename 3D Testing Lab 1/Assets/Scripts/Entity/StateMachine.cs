@@ -13,6 +13,9 @@ public class StateMachine : MonoBehaviour
 	[SerializeField] Rigidbody _myRigidbody = null;
 	public Rigidbody myRigidbody => _myRigidbody;
 
+	[SerializeField] GameObject _myBody = null;
+	public GameObject myBody => _myBody;
+
 	protected Dictionary<string, State> States = new Dictionary<string, State>();
 	protected State currentState = null;
 	protected string _previousState = "";
