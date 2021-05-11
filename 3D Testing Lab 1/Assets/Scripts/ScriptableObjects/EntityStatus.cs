@@ -6,15 +6,13 @@ using UnityEngine;
 public class EntityStatus : ScriptableObject
 {
 	//Lerp player's movement to input * Maxspeed
-    [SerializeField] float maxSpeed = 0;
-	public float MaxSpeed{ get { return maxSpeed; } }
-	[SerializeField] float lerpSpeed = 0;
-	public float LerpSpeed { get { return lerpSpeed; } }
+    [SerializeField] float moveSpeed = 0;
+	public float MoveSpeed{ get { return moveSpeed; } }
 
-	[SerializeField] float maxGravity = 0;
-	public float MaxGravity { get { return maxGravity; } }
-	[SerializeField] float lerpGravity = 0;
-	public float LerpGravity { get { return lerpGravity; } }
+	[SerializeField] float gravity = 0;
+	public float Gravity { get { return Gravity; } }
+
+	public bool isGrounded = true;
 
 	[HideInInspector] public Vector3 currentMovement;
 }

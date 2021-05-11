@@ -13,6 +13,7 @@ public class Player_IdleState : State
 	public override void StartState()
 	{
 		currentMotion = SM.myStatus.currentMovement;
+		currentMotion.y = 0;
 		xVelocity = 0;
 		yVelocity = 0;
 	}
@@ -73,8 +74,43 @@ public class Player_MoveState : State
 		camY.Normalize();
 
 		Vector3 targetDirection = (camX * SM.myInputs.MoveInput.x) + (camY * SM.myInputs.MoveInput.y);
-		currentMotion = Vector3.SmoothDamp(currentMotion, targetDirection * SM.myStatus.MaxSpeed, ref velocityRef, 0.16f);
+		currentMotion = Vector3.SmoothDamp(currentMotion, targetDirection * SM.myStatus.MoveSpeed, ref velocityRef, 0.16f);
 		return currentMotion; 
+	}
+
+	public override void EndState()
+	{
+
+	}
+}
+
+public class Player_JumpState : State
+{
+	Vector3 currentMotion;
+
+	float xVelocity;
+	float yVelocity;
+
+	public Player_JumpState(string name, StateMachine stateMachine) : base(name, stateMachine) { }
+
+	public override void StartState()
+	{
+		currentMotion = SM.myStatus.currentMovement;
+		xVelocity = 0;
+		yVelocity = 0;
+
+		currentMotion.y = 5f;
+	}
+
+	public override void UpdateState()
+	{
+		
+	}
+
+	public override Vector3 MotionUpdate()
+	{
+		currentMotion.y -= SM.myStatus.Gravity;
+		return currentMotion;
 	}
 
 	public override void EndState()

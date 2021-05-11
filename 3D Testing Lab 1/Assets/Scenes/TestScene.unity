@@ -374,6 +374,7 @@ GameObject:
   - component: {fileID: 195086530}
   - component: {fileID: 195086531}
   - component: {fileID: 195086529}
+  - component: {fileID: 195086532}
   - component: {fileID: 195086528}
   m_Layer: 0
   m_Name: Player
@@ -410,7 +411,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 900051506d00960478a38d895eed02d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerCameraZoom: {fileID: 0}
+  playerCameraZoom: {fileID: 195086532}
 --- !u!4 &195086530
 Transform:
   m_ObjectHideFlags: 0
@@ -443,6 +444,22 @@ MonoBehaviour:
   _myInputs: {fileID: 195086529}
   _myRigidbody: {fileID: 195086528}
   _myBody: {fileID: 1281391007}
+--- !u!114 &195086532
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 195086527}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b03598ce9ff41446b1748b93194672f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetFreeLookCamera: {fileID: 526931444}
+  zoomSpeed: 0.1
+  zoomMin: 0.25
+  zoomMax: 1.5
 --- !u!1 &284852841
 GameObject:
   m_ObjectHideFlags: 3
@@ -820,8 +837,8 @@ MonoBehaviour:
     Value: 0.5
     m_SpeedMode: 0
     m_MaxSpeed: 0.8
-    m_AccelTime: 0.1
-    m_DecelTime: 0.1
+    m_AccelTime: 0.2
+    m_DecelTime: 0.2
     m_InputAxisName: Mouse Y
     m_InputAxisValue: 0
     m_InvertInput: 1
@@ -843,9 +860,9 @@ MonoBehaviour:
   m_XAxis:
     Value: 0
     m_SpeedMode: 0
-    m_MaxSpeed: 200
+    m_MaxSpeed: 180
     m_AccelTime: 0.2
-    m_DecelTime: 0.1
+    m_DecelTime: 0.2
     m_InputAxisName: Mouse X
     m_InputAxisValue: 0
     m_InvertInput: 0
