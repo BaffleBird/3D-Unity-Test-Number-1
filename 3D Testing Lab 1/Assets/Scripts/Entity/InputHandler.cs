@@ -13,6 +13,7 @@ public class InputHandler : MonoBehaviour
 
 	protected Dictionary<string, Button> inputs = new Dictionary<string, Button>();
 
+
 	public Button GetInput(string s) => inputs[s];
 
 	public void ResetAllInputs()

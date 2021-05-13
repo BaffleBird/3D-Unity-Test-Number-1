@@ -27,7 +27,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""interactions"": """"
                 },
                 {
-                    ""name"": ""Action1"",
+                    ""name"": ""Jump"",
                     ""type"": ""Button"",
                     ""id"": ""a4989c69-adda-4cda-b217-d6c9758633f4"",
                     ""expectedControlType"": ""Button"",
@@ -125,7 +125,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Action1"",
+                    ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -159,7 +159,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         // InGameActions
         m_InGameActions = asset.FindActionMap("InGameActions", throwIfNotFound: true);
         m_InGameActions_Movement = m_InGameActions.FindAction("Movement", throwIfNotFound: true);
-        m_InGameActions_Action1 = m_InGameActions.FindAction("Action1", throwIfNotFound: true);
+        m_InGameActions_Jump = m_InGameActions.FindAction("Jump", throwIfNotFound: true);
         m_InGameActions_Aim = m_InGameActions.FindAction("Aim", throwIfNotFound: true);
         m_InGameActions_Zoom = m_InGameActions.FindAction("Zoom", throwIfNotFound: true);
     }
@@ -212,7 +212,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
     private readonly InputActionMap m_InGameActions;
     private IInGameActionsActions m_InGameActionsActionsCallbackInterface;
     private readonly InputAction m_InGameActions_Movement;
-    private readonly InputAction m_InGameActions_Action1;
+    private readonly InputAction m_InGameActions_Jump;
     private readonly InputAction m_InGameActions_Aim;
     private readonly InputAction m_InGameActions_Zoom;
     public struct InGameActionsActions
@@ -220,7 +220,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         private @PlayerControls m_Wrapper;
         public InGameActionsActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
         public InputAction @Movement => m_Wrapper.m_InGameActions_Movement;
-        public InputAction @Action1 => m_Wrapper.m_InGameActions_Action1;
+        public InputAction @Jump => m_Wrapper.m_InGameActions_Jump;
         public InputAction @Aim => m_Wrapper.m_InGameActions_Aim;
         public InputAction @Zoom => m_Wrapper.m_InGameActions_Zoom;
         public InputActionMap Get() { return m_Wrapper.m_InGameActions; }
@@ -235,9 +235,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @Movement.started -= m_Wrapper.m_InGameActionsActionsCallbackInterface.OnMovement;
                 @Movement.performed -= m_Wrapper.m_InGameActionsActionsCallbackInterface.OnMovement;
                 @Movement.canceled -= m_Wrapper.m_InGameActionsActionsCallbackInterface.OnMovement;
-                @Action1.started -= m_Wrapper.m_InGameActionsActionsCallbackInterface.OnAction1;
-                @Action1.performed -= m_Wrapper.m_InGameActionsActionsCallbackInterface.OnAction1;
-                @Action1.canceled -= m_Wrapper.m_InGameActionsActionsCallbackInterface.OnAction1;
+                @Jump.started -= m_Wrapper.m_InGameActionsActionsCallbackInterface.OnJump;
+                @Jump.performed -= m_Wrapper.m_InGameActionsActionsCallbackInterface.OnJump;
+                @Jump.canceled -= m_Wrapper.m_InGameActionsActionsCallbackInterface.OnJump;
                 @Aim.started -= m_Wrapper.m_InGameActionsActionsCallbackInterface.OnAim;
                 @Aim.performed -= m_Wrapper.m_InGameActionsActionsCallbackInterface.OnAim;
                 @Aim.canceled -= m_Wrapper.m_InGameActionsActionsCallbackInterface.OnAim;
@@ -251,9 +251,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @Movement.started += instance.OnMovement;
                 @Movement.performed += instance.OnMovement;
                 @Movement.canceled += instance.OnMovement;
-                @Action1.started += instance.OnAction1;
-                @Action1.performed += instance.OnAction1;
-                @Action1.canceled += instance.OnAction1;
+                @Jump.started += instance.OnJump;
+                @Jump.performed += instance.OnJump;
+                @Jump.canceled += instance.OnJump;
                 @Aim.started += instance.OnAim;
                 @Aim.performed += instance.OnAim;
                 @Aim.canceled += instance.OnAim;
@@ -267,7 +267,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
     public interface IInGameActionsActions
     {
         void OnMovement(InputAction.CallbackContext context);
-        void OnAction1(InputAction.CallbackContext context);
+        void OnJump(InputAction.CallbackContext context);
         void OnAim(InputAction.CallbackContext context);
         void OnZoom(InputAction.CallbackContext context);
     }

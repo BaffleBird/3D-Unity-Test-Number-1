@@ -12,8 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d857f3fe36204d438acabc3da988361, type: 3}
   m_Name: PlayerStatus
   m_EditorClassIdentifier: 
-  maxSpeed: 6
-  lerpSpeed: 0.75
-  maxGravity: 0
-  lerpGravity: 0
+  gravity: 0.5
+  isGrounded: 1
   currentMovement: {x: 0, y: 0, z: 0}

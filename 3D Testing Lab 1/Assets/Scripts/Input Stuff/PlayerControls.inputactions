@@ -14,7 +14,7 @@
                     "interactions": ""
                 },
                 {
-                    "name": "Action1",
+                    "name": "Jump",
                     "type": "Button",
                     "id": "a4989c69-adda-4cda-b217-d6c9758633f4",
                     "expectedControlType": "Button",
@@ -112,7 +112,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Action1",
+                    "action": "Jump",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

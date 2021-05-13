@@ -18,9 +18,8 @@ public class PlayerInputHandler : InputHandler
 
 		playerControls.InGameActions.Zoom.performed += ctx => playerCameraZoom.AdjustCameraZoomIndex(ctx.ReadValue<float>());
 
-		playerControls.InGameActions.Action1.started += ctx => inputs["Jump"] = Button.Down;
-		playerControls.InGameActions.Action1.performed += ctx => inputs["Jump"] = Button.Hold;
-		playerControls.InGameActions.Action1.canceled += ctx => inputs["Jump"] = Button.Up;
+		playerControls.InGameActions.Jump.started += ctx => inputs["Jump"] = Button.Down;
+		playerControls.InGameActions.Jump.canceled += ctx => inputs["Jump"] = Button.Up;
 	}
 
 	private void OnEnable()

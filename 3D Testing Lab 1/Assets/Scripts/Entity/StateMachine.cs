@@ -37,7 +37,7 @@ public class StateMachine : MonoBehaviour
 	{
 		currentState.FixedUpdateState();
 		myRigidbody.MovePosition(myRigidbody.position + (currentState.MotionUpdate() * Time.fixedDeltaTime));
-		myStatus.currentMovement = currentState.MotionUpdate() * Time.fixedDeltaTime;
+		myStatus.currentMovement = currentState.MotionUpdate();
 	}
 
 	protected void SwitchState(State newState)
