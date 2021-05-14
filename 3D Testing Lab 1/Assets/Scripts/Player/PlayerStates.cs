@@ -21,7 +21,7 @@ public class Player_IdleState : State
 
 	public override void UpdateState()
 	{
-		if (SM.myInputs.GetInput("Jump") == Button.Down)
+		if (SM.myInputs.GetInput("Jump"))
 			SM.SwitchState("Jump");
 		else if (SM.myInputs.MoveInput != Vector2.zero)
 			SM.SwitchState("Move");
@@ -42,16 +42,13 @@ public class Player_IdleState : State
 
 public class Player_MoveState : State
 {
-	float moveSpeed = 10f;
+	float moveSpeed = 7f;
 
 	Vector3 currentMotion;
 	Vector3 velocityRef;
 
 	Quaternion targetRot;
-
-	Camera cam;
-	Vector3 camX;
-	Vector3 camY;
+	Vector3 targetDirection;
 
 	public Player_MoveState(string name, StateMachine stateMachine) : base(name, stateMachine) { }
 
@@ -59,12 +56,11 @@ public class Player_MoveState : State
 	{
 		currentMotion = SM.myStatus.currentMovement;
 		targetRot = SM.myRigidbody.rotation;
-		cam = Camera.main;
 	}
 
 	public override void UpdateState()
 	{
-		if (SM.myInputs.GetInput("Jump") == Button.Down)
+		if (SM.myInputs.GetInput("Jump"))
 			SM.SwitchState("Jump");
 		else if (SM.myInputs.MoveInput == Vector2.zero)
 			SM.SwitchState("Idle");
@@ -72,15 +68,9 @@ public class Player_MoveState : State
 
 	public override Vector3 MotionUpdate()
 	{
-		camX = cam.transform.right;
-		camY = cam.transform.forward;
-		camX.y = 0;
-		camY.y = 0;
-		camX.Normalize();
-		camY.Normalize();
-
-		Vector3 targetDirection = (camX * SM.myInputs.MoveInput.x) + (camY * SM.myInputs.MoveInput.y);
+		targetDirection = MathHelper.CameraAdjustedVector(Camera.main, SM.myInputs.MoveInput);
 		currentMotion = Vector3.SmoothDamp(currentMotion, targetDirection * moveSpeed, ref velocityRef, 0.16f);
+
 		return currentMotion; 
 	}
 
@@ -100,21 +90,18 @@ public class Player_MoveState : State
 public class Player_JumpState : State
 {
 	Vector3 currentMotion;
+	Vector3 velocityRef;
+
 	Quaternion targetRot;
-
-	float xVelocity;
-	float yVelocity;
-
+	Vector3 targetDirection;
+	
 	public Player_JumpState(string name, StateMachine stateMachine) : base(name, stateMachine) { }
 
 	public override void StartState()
 	{
-		currentMotion.x = SM.myInputs.MoveInput.x;
-		currentMotion.z = SM.myInputs.MoveInput.y;
-		currentMotion = currentMotion * SM.myStatus.currentMovement.magnitude;
-		xVelocity = 0;
-		yVelocity = 0;
-
+		targetDirection = MathHelper.CameraAdjustedVector(Camera.main, SM.myInputs.MoveInput);
+		currentMotion = targetDirection * SM.myStatus.currentMovement.magnitude;
+		
 		currentMotion.y = 20f;
 		SM.myStatus.isGrounded = false;
 	}

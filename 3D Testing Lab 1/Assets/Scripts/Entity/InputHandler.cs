@@ -11,18 +11,19 @@ public class InputHandler : MonoBehaviour
 	protected Vector2 pointerInput = new Vector2();
 	public Vector2 PointerInput => pointerInput;
 
-	protected Dictionary<string, Button> inputs = new Dictionary<string, Button>();
+	protected Vector3 pointerTarget = new Vector3();
+	public Vector3 PointerTarget => pointerTarget;
+
+	protected Dictionary<string, bool> inputs = new Dictionary<string, bool>();
 
 
-	public Button GetInput(string s) => inputs[s];
+	public bool GetInput(string s) => inputs[s];
 
 	public void ResetAllInputs()
 	{
 		foreach (var key in inputs.Keys.ToList())
 		{
-			inputs[key] = Button.Up;
+			inputs[key] = false;
 		}
 	}
 }
-
-public enum Button { Down, Hold, Up }

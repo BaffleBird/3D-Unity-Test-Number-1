@@ -22,8 +22,23 @@ public static class MathHelper
 		return 0;
 	}
 
+	//Just Zeroes out the Y component of a Vector
 	public static Vector3 ZeroVectorY(Vector3 vector)
 	{
 		return new Vector3(vector.x, 0, vector.z);
+	}
+
+	public static Vector3 CameraAdjustedVector(Camera targetCamera, Vector2 movementVector)
+	{
+		Vector3 camX;
+		Vector3 camY;
+		camX = targetCamera.transform.right;
+		camY = targetCamera.transform.forward;
+		camX.y = 0;
+		camY.y = 0;
+		camX.Normalize();
+		camY.Normalize();
+
+		return (camX * movementVector.x) + (camY * movementVector.y);
 	}
 }

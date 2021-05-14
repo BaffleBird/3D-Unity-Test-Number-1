@@ -21,7 +21,7 @@ public class PlayerSM : StateMachine
 
 	private void OnCollisionEnter(Collision collision)
 	{
-		if(collision.gameObject.tag == "Floor")
+		if(collision.gameObject.tag == "Terrain")
 		{
 			myStatus.isGrounded = true;
 		}
