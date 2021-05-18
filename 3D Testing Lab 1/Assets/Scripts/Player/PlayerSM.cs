@@ -10,7 +10,7 @@ public class PlayerSM : StateMachine
 
 		States.Add("Idle", new Player_IdleState("Idle", this));
 		States.Add("Move", new Player_MoveState("Move", this));
-		States.Add("Jump", new Player_JumpState("Jump", this));
+		States.Add("Jump", new Player_JumpState("Jump", this)); myStatus.SetCooldown("Jump", 0);
 
 		currentState = States["Idle"];
 		_previousState = currentState.StateName;
@@ -25,5 +25,11 @@ public class PlayerSM : StateMachine
 		{
 			myStatus.isGrounded = true;
 		}
+	}
+
+	void GroundCheck()
+	{
+		RaycastHit hit;
+		//if (Physics.Raycast(transform.position, Vector3.down, out hit, myRigidbody.))
 	}
 }

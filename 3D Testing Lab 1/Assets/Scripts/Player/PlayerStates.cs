@@ -62,7 +62,7 @@ public class Player_MoveState : State
 	{
 		if (SM.myInputs.GetInput("Jump"))
 			SM.SwitchState("Jump");
-		else if (SM.myInputs.MoveInput == Vector2.zero)
+		else if (SM.myInputs.MoveInput == Vector2.zero && currentMotion.sqrMagnitude != 0)
 			SM.SwitchState("Idle");
 	}
 
@@ -76,9 +76,11 @@ public class Player_MoveState : State
 
 	public override void FixedUpdateState()
 	{
-		if (currentMotion != Vector3.zero)
-			targetRot = Quaternion.Lerp(SM.myRigidbody.rotation, Quaternion.LookRotation(MathHelper.ZeroVectorY(currentMotion.normalized)), 0.2f);
-		SM.myRigidbody.MoveRotation(targetRot);
+		if (MathHelper.ZeroVectorY(currentMotion) != Vector3.zero)
+		{
+			targetRot = Quaternion.Lerp(SM.myRigidbody.rotation, Quaternion.LookRotation(MathHelper.ZeroVectorY(currentMotion).normalized), 0.2f);
+			SM.myRigidbody.MoveRotation(targetRot);
+		}
 	}
 
 	public override void EndState()
@@ -90,7 +92,7 @@ public class Player_MoveState : State
 public class Player_JumpState : State
 {
 	Vector3 currentMotion;
-	Vector3 velocityRef;
+	float moveSpeed = 0f;
 
 	Quaternion targetRot;
 	Vector3 targetDirection;
@@ -99,10 +101,20 @@ public class Player_JumpState : State
 
 	public override void StartState()
 	{
+		moveSpeed = 0f;
+		switch (SM.previousState)
+		{
+			case "Move":
+				moveSpeed = 7f;
+				break;
+			case "Idle":
+				moveSpeed = 0f;
+				break;
+		}
 		targetDirection = MathHelper.CameraAdjustedVector(Camera.main, SM.myInputs.MoveInput);
-		currentMotion = targetDirection * SM.myStatus.currentMovement.magnitude;
+		currentMotion = targetDirection.normalized * moveSpeed;
 		
-		currentMotion.y = 20f;
+		currentMotion.y = 16f;
 		SM.myStatus.isGrounded = false;
 	}
 
@@ -110,7 +122,7 @@ public class Player_JumpState : State
 	{
 		if (SM.myStatus.isGrounded && SM.myInputs.MoveInput != Vector2.zero)
 			SM.SwitchState("Move");
-		if (SM.myStatus.isGrounded)
+		else if (SM.myStatus.isGrounded)
 			SM.SwitchState("Idle");
 	}
 
@@ -122,13 +134,15 @@ public class Player_JumpState : State
 
 	public override void FixedUpdateState()
 	{
-		if (currentMotion != Vector3.zero)
+		if (MathHelper.ZeroVectorY(currentMotion) != Vector3.zero)
+		{
 			targetRot = Quaternion.Lerp(SM.myRigidbody.rotation, Quaternion.LookRotation(MathHelper.ZeroVectorY(currentMotion).normalized), 0.2f);
-		SM.myRigidbody.MoveRotation(targetRot);
+			SM.myRigidbody.MoveRotation(targetRot);
+		}
 	}
 
 	public override void EndState()
 	{
-
+		SM.myStatus.SetCooldown("Jump", 0.1f);
 	}
 }

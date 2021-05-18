@@ -13,13 +13,18 @@ public class StateMachine : MonoBehaviour
 	[SerializeField] Rigidbody _myRigidbody = null;
 	public Rigidbody myRigidbody => _myRigidbody;
 
-	[SerializeField] GameObject _myBody = null;
-	public GameObject myBody => _myBody;
+	[SerializeField] GameObject _myModel = null;
+	public GameObject myModel => _myModel;
+
+	[SerializeField] Collider _myCollider = null;
+	public Collider myCollider => _myCollider;
 
 	protected Dictionary<string, State> States = new Dictionary<string, State>();
 	protected State currentState = null;
 	protected string _previousState = "";
 	public string previousState { get { return _previousState; } }
+
+	
 
 	protected virtual void Awake()
     {
@@ -30,7 +35,7 @@ public class StateMachine : MonoBehaviour
     {
 		if (currentState != null)
 			currentState.UpdateState();
-		//Debug.Log(currentState.StateName);
+		myStatus.UpdateCooldowns();
 	}
 
 	protected virtual void FixedUpdate()
@@ -40,6 +45,7 @@ public class StateMachine : MonoBehaviour
 		myStatus.currentMovement = currentState.MotionUpdate();
 	}
 
+	//STATE MANAGEMENT
 	protected void SwitchState(State newState)
 	{
 		currentState.EndState();
@@ -50,7 +56,8 @@ public class StateMachine : MonoBehaviour
 
 	public void SwitchState(string stateName)
 	{
-		SwitchState(States[stateName]);
+		if (myStatus.GetCooldown(stateName))
+			SwitchState(States[stateName]);
 	}
 }
 
