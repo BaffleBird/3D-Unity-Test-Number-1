@@ -11,6 +11,7 @@ public class PlayerSM : StateMachine
 		States.Add("Idle", new Player_IdleState("Idle", this));
 		States.Add("Move", new Player_MoveState("Move", this));
 		States.Add("Jump", new Player_JumpState("Jump", this)); myStatus.SetCooldown("Jump", 0);
+		States.Add("Dodge", new Player_DodgeState("Dodge", this)); myStatus.SetCooldown("Dodge", 0);
 
 		currentState = States["Idle"];
 		_previousState = currentState.StateName;
@@ -19,17 +20,10 @@ public class PlayerSM : StateMachine
 		myStatus.isGrounded = true;
 	}
 
-	private void OnCollisionEnter(Collision collision)
+	protected override void FixedUpdate()
 	{
-		if(collision.gameObject.tag == "Terrain")
-		{
-			myStatus.isGrounded = true;
-		}
-	}
-
-	void GroundCheck()
-	{
-		RaycastHit hit;
-		//if (Physics.Raycast(transform.position, Vector3.down, out hit, myRigidbody.))
+		base.FixedUpdate();
+		GroundCheck();
+		TextUpdate.Instance.setText(myStatus.groundSlope.ToString());
 	}
 }

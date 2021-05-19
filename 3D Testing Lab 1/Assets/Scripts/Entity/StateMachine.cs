@@ -10,8 +10,8 @@ public class StateMachine : MonoBehaviour
 	[SerializeField] InputHandler _myInputs = null;
 	public InputHandler myInputs => _myInputs;
 
-	[SerializeField] Rigidbody _myRigidbody = null;
-	public Rigidbody myRigidbody => _myRigidbody;
+	[SerializeField] CharacterController _myCController;
+	public CharacterController myCController => _myCController;
 
 	[SerializeField] GameObject _myModel = null;
 	public GameObject myModel => _myModel;
@@ -41,7 +41,7 @@ public class StateMachine : MonoBehaviour
 	protected virtual void FixedUpdate()
 	{
 		currentState.FixedUpdateState();
-		myRigidbody.MovePosition(myRigidbody.position + (currentState.MotionUpdate() * Time.fixedDeltaTime));
+		myCController.Move(currentState.MotionUpdate() * Time.fixedDeltaTime);
 		myStatus.currentMovement = currentState.MotionUpdate();
 	}
 
@@ -58,6 +58,20 @@ public class StateMachine : MonoBehaviour
 	{
 		if (myStatus.GetCooldown(stateName))
 			SwitchState(States[stateName]);
+	}
+
+	//PHYSICS CHECKS
+	protected void GroundCheck()
+	{
+		LayerMask mask = LayerMask.GetMask("Terrain");
+		RaycastHit hit;
+		if (Physics.Raycast(transform.position, Vector3.down, out hit, 0.2f, mask))
+		{
+			myStatus.groundSlope = (Vector3.Angle(hit.normal, transform.forward) - 90);
+			myStatus.isGrounded = true;
+		}
+		else
+			myStatus.isGrounded = false;
 	}
 }
 

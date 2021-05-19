@@ -49,6 +49,14 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Axis"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Dodge"",
+                    ""type"": ""Button"",
+                    ""id"": ""bb94e5e9-3c44-496a-94d8-85941c06f72c"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -150,6 +158,17 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""action"": ""Zoom"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2653ffec-5a75-4eef-8c4d-ba5c365e9de0"",
+                    ""path"": ""<Keyboard>/leftShift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Dodge"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -162,6 +181,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         m_InGameActions_Jump = m_InGameActions.FindAction("Jump", throwIfNotFound: true);
         m_InGameActions_Aim = m_InGameActions.FindAction("Aim", throwIfNotFound: true);
         m_InGameActions_Zoom = m_InGameActions.FindAction("Zoom", throwIfNotFound: true);
+        m_InGameActions_Dodge = m_InGameActions.FindAction("Dodge", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -215,6 +235,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
     private readonly InputAction m_InGameActions_Jump;
     private readonly InputAction m_InGameActions_Aim;
     private readonly InputAction m_InGameActions_Zoom;
+    private readonly InputAction m_InGameActions_Dodge;
     public struct InGameActionsActions
     {
         private @PlayerControls m_Wrapper;
@@ -223,6 +244,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         public InputAction @Jump => m_Wrapper.m_InGameActions_Jump;
         public InputAction @Aim => m_Wrapper.m_InGameActions_Aim;
         public InputAction @Zoom => m_Wrapper.m_InGameActions_Zoom;
+        public InputAction @Dodge => m_Wrapper.m_InGameActions_Dodge;
         public InputActionMap Get() { return m_Wrapper.m_InGameActions; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -244,6 +266,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @Zoom.started -= m_Wrapper.m_InGameActionsActionsCallbackInterface.OnZoom;
                 @Zoom.performed -= m_Wrapper.m_InGameActionsActionsCallbackInterface.OnZoom;
                 @Zoom.canceled -= m_Wrapper.m_InGameActionsActionsCallbackInterface.OnZoom;
+                @Dodge.started -= m_Wrapper.m_InGameActionsActionsCallbackInterface.OnDodge;
+                @Dodge.performed -= m_Wrapper.m_InGameActionsActionsCallbackInterface.OnDodge;
+                @Dodge.canceled -= m_Wrapper.m_InGameActionsActionsCallbackInterface.OnDodge;
             }
             m_Wrapper.m_InGameActionsActionsCallbackInterface = instance;
             if (instance != null)
@@ -260,6 +285,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @Zoom.started += instance.OnZoom;
                 @Zoom.performed += instance.OnZoom;
                 @Zoom.canceled += instance.OnZoom;
+                @Dodge.started += instance.OnDodge;
+                @Dodge.performed += instance.OnDodge;
+                @Dodge.canceled += instance.OnDodge;
             }
         }
     }
@@ -270,5 +298,6 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         void OnJump(InputAction.CallbackContext context);
         void OnAim(InputAction.CallbackContext context);
         void OnZoom(InputAction.CallbackContext context);
+        void OnDodge(InputAction.CallbackContext context);
     }
 }

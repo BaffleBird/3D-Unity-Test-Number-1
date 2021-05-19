@@ -16,6 +16,7 @@ public class PlayerInputHandler : InputHandler
 	{
 		playerControls = new PlayerControls();
 		inputs.Add("Jump", false);
+		inputs.Add("Dodge", false);
 
 		playerControls.InGameActions.Movement.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
 		playerControls.InGameActions.Movement.canceled += ctx => moveInput = ctx.ReadValue<Vector2>();
@@ -24,6 +25,9 @@ public class PlayerInputHandler : InputHandler
 
 		playerControls.InGameActions.Jump.started += ctx => inputs["Jump"] = true;
 		playerControls.InGameActions.Jump.canceled += ctx => inputs["Jump"] = false;
+
+		playerControls.InGameActions.Dodge.performed += ctx => inputs["Dodge"] = true;
+		playerControls.InGameActions.Dodge.canceled += ctx => inputs["Dodge"] = false;
 
 		playerCam = Camera.main;
 	}

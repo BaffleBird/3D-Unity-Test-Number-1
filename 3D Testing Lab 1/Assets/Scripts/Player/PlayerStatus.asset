@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d857f3fe36204d438acabc3da988361, type: 3}
   m_Name: PlayerStatus
   m_EditorClassIdentifier: 
-  gravity: 0.5
+  gravity: 20
   isGrounded: 1
-  currentMovement: {x: 0, y: 0, z: 0}
+  groundSlope: 0
+  currentMovement: {x: 0.01903288, y: 0, z: 0.008506858}
