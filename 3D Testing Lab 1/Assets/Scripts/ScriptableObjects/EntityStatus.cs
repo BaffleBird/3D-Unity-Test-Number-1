@@ -9,10 +9,12 @@ public class EntityStatus : ScriptableObject
 	[SerializeField] float gravity = 0;
 	public float Gravity { get { return gravity; } }
 
-	public bool isGrounded = true;
-	[HideInInspector] public float groundSlope;
+	[HideInInspector] public float wallSlope;
 
-	[HideInInspector] public Vector3 currentMovement;
+	public bool isStableGround = false;
+	[HideInInspector] public Vector3 hitNormal;
+
+	public Vector3 currentMovement;
 
 	Dictionary<string, float> myCooldowns = new Dictionary<string, float>();
 

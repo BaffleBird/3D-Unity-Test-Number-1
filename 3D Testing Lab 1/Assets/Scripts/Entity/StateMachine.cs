@@ -24,18 +24,19 @@ public class StateMachine : MonoBehaviour
 	protected string _previousState = "";
 	public string previousState { get { return _previousState; } }
 
-	
 
+	LayerMask terrainMask;
 	protected virtual void Awake()
     {
-        
-    }
+		terrainMask = LayerMask.GetMask("Terrain");
+	}
 
     protected virtual void Update()
     {
 		if (currentState != null)
 			currentState.UpdateState();
 		myStatus.UpdateCooldowns();
+		TextUpdate.Instance.SetText("State", currentState.StateName);
 	}
 
 	protected virtual void FixedUpdate()
@@ -61,17 +62,16 @@ public class StateMachine : MonoBehaviour
 	}
 
 	//PHYSICS CHECKS
-	protected void GroundCheck()
+	protected void WallCheck(float rayLength)
 	{
-		LayerMask mask = LayerMask.GetMask("Terrain");
 		RaycastHit hit;
-		if (Physics.Raycast(transform.position, Vector3.down, out hit, 0.2f, mask))
-		{
-			myStatus.groundSlope = (Vector3.Angle(hit.normal, transform.forward) - 90);
-			myStatus.isGrounded = true;
-		}
+
+		if (Physics.Raycast(transform.position, MathHelper.ZeroVectorY(myStatus.currentMovement).normalized, out hit, rayLength, terrainMask))
+			myStatus.wallSlope = (Vector3.Angle(hit.normal, Vector3.down));
 		else
-			myStatus.isGrounded = false;
+			myStatus.wallSlope = 0;
+
+		//Debug.DrawRay(transform.position, MathHelper.ZeroVectorY(myStatus.currentMovement).normalized * rayLength, Color.cyan);
 	}
 }
 

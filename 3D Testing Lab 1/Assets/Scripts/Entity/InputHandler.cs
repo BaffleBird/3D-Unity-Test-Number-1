@@ -19,6 +19,11 @@ public class InputHandler : MonoBehaviour
 
 	public bool GetInput(string s) => inputs[s];
 
+	public void ResetInput(string inputName)
+	{
+		inputs[inputName] = false;
+	}
+
 	public void ResetAllInputs()
 	{
 		foreach (var key in inputs.Keys.ToList())

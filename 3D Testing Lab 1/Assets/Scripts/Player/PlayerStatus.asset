@@ -15,4 +15,7 @@ MonoBehaviour:
   gravity: 20
   isGrounded: 1
   groundSlope: 0
-  currentMovement: {x: 0.01903288, y: 0, z: 0.008506858}
+  wallSlope: 100.97875
+  isStableGround: 1
+  hitNormal: {x: 0, y: 0, z: 0}
+  currentMovement: {x: -0.0024076174, y: 0, z: -0.002540187}
