@@ -23,13 +23,9 @@ public class PlayerSM : StateMachine
 	protected override void FixedUpdate()
 	{
 		base.FixedUpdate();
-		if (myCController.isGrounded)
-		{
-			myStatus.isStableGround = (Vector3.Angle(Vector3.up, myStatus.hitNormal)) <= myCController.slopeLimit;
-			//TextUpdate.Instance.SetText("Hit Normal", (Vector3.Angle(Vector3.up, myStatus.hitNormal).ToString()));
-		}
-		else
-			myStatus.isStableGround = false;
+		StabilityCheck();
+		//TextUpdate.Instance.SetText("Hit Normal", (Vector3.Angle(Vector3.up, myStatus.hitNormal).ToString()));
+		//TextUpdate.Instance.SetText("Grounded", myCController.isGrounded.ToString());
 	}
 
 	private void OnControllerColliderHit(ControllerColliderHit hit)

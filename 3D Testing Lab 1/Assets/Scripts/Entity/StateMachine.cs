@@ -73,6 +73,25 @@ public class StateMachine : MonoBehaviour
 
 		//Debug.DrawRay(transform.position, MathHelper.ZeroVectorY(myStatus.currentMovement).normalized * rayLength, Color.cyan);
 	}
+
+	protected virtual void StabilityCheck()
+	{
+		if (myCController.isGrounded)
+		{
+			myCController.Move(Vector3.down * 0.2f);
+			myStatus.isStableGround = (Vector3.Angle(Vector3.up, myStatus.hitNormal)) <= myCController.slopeLimit;
+		}
+		else
+		{
+			myStatus.isStableGround = false;
+		}
+	}
+
+	public float StabilityPercentage()
+	{
+		return MathHelper.Percentage((Vector3.Angle(Vector3.up, myStatus.hitNormal)), myCController.slopeLimit);
+	}
+
 }
 
 public abstract class State
