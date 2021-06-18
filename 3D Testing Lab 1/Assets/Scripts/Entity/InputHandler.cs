@@ -16,7 +16,6 @@ public class InputHandler : MonoBehaviour
 
 	protected Dictionary<string, bool> inputs = new Dictionary<string, bool>();
 
-
 	public bool GetInput(string s) => inputs[s];
 
 	public void ResetInput(string inputName)
