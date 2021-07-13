@@ -6,7 +6,7 @@ public class PlayerInputHandler : InputHandler
 {
 	PlayerControls playerControls;
 	public PlayerControls PlayerControl => playerControls;
-	[SerializeField] PlayerCameraZoom playerCameraZoom;
+	[SerializeField] PlayerCameraControl playerCameraZoom;
 
 	Camera playerCam;
 	Vector3 camX;
@@ -16,15 +16,20 @@ public class PlayerInputHandler : InputHandler
 	{
 		playerControls = new PlayerControls();
 		inputs.Add("Jump", false);
+		inputs.Add("JumpHold", false);
 		inputs.Add("Dodge", false);
 		inputs.Add("DodgeHold", false);
+		inputs.Add("Shoot", false);
 
 		playerControls.InGameActions.Movement.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
 		playerControls.InGameActions.Movement.canceled += ctx => moveInput = ctx.ReadValue<Vector2>();
 
+		playerControls.InGameActions.Look.performed += ctx => pointerInput = ctx.ReadValue<Vector2>();
 		playerControls.InGameActions.Zoom.performed += ctx => playerCameraZoom.AdjustCameraZoomIndex(ctx.ReadValue<float>());
 
 		playerControls.InGameActions.Jump.started += ctx => inputs["Jump"] = true;
+		playerControls.InGameActions.Jump.performed += ctx => inputs["JumpHold"] = true;
+		playerControls.InGameActions.Jump.canceled += ctx => inputs["JumpHold"] = false;
 		playerControls.InGameActions.Jump.canceled += ctx => inputs["Jump"] = false;
 
 		playerControls.InGameActions.Dodge.started += ctx => inputs["Dodge"] = true;
@@ -32,19 +37,13 @@ public class PlayerInputHandler : InputHandler
 		playerControls.InGameActions.Dodge.canceled += ctx => inputs["DodgeHold"] = false;
 		playerControls.InGameActions.Dodge.canceled += ctx => inputs["Dodge"] = false;
 
-		playerCam = Camera.main;
+		playerControls.InGameActions.Dodge.performed += ctx => inputs["Shoot"] = true;
+		playerControls.InGameActions.Dodge.canceled += ctx => inputs["Shoot"] = false;
 	}
 
-	private void FixedUpdate()
+	private void LateUpdate()
 	{
-		camX = playerCam.transform.right;
-		camY = playerCam.transform.forward;
-		camX.y = 0;
-		camY.y = 0;
-		camX.Normalize();
-		camY.Normalize();
-
-		pointerTarget = camX + camY;
+		pointerInput = Vector2.zero;
 	}
 
 	private void OnEnable()

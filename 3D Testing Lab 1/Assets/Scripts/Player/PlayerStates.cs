@@ -146,7 +146,7 @@ public class Player_DodgeState : State
 	Quaternion targetRot;
 	Vector3 targetDirection;
 
-	float dodgeSpeed = 12f;
+	float dodgeSpeed = 14f;
 	float dodgeCounter = 0f;
 
 	public Player_DodgeState(string name, StateMachine stateMachine) : base(name, stateMachine) { }
@@ -158,8 +158,8 @@ public class Player_DodgeState : State
 		else
 			targetDirection = SM.myModel.transform.forward;
 		currentMotion = targetDirection.normalized * dodgeSpeed;
-		dodgeCounter = 0.3f;
 
+		dodgeCounter = 0.18f;
 		SM.myInputs.ResetInput("Dodge");
 	}
 
@@ -184,7 +184,7 @@ public class Player_DodgeState : State
 	public override Vector3 MotionUpdate()
 	{
 		if (dodgeCounter > 0)
-			currentMotion = Vector3.SmoothDamp(currentMotion, targetDirection * dodgeSpeed, ref velocityRef, 0.16f);
+			currentMotion = Vector3.SmoothDamp(currentMotion, targetDirection * dodgeSpeed, ref velocityRef, 0.3f);
 		else
 			currentMotion = Vector3.SmoothDamp(currentMotion, Vector3.zero, ref velocityRef, 0.16f);
 
@@ -198,7 +198,7 @@ public class Player_DodgeState : State
 	{
 		if (MathHelper.ZeroVectorY(currentMotion) != Vector3.zero)
 		{
-			targetRot = Quaternion.Lerp(SM.myModel.transform.rotation, Quaternion.LookRotation(MathHelper.ZeroVectorY(currentMotion).normalized), 0.2f);
+			targetRot = Quaternion.Lerp(SM.myModel.transform.rotation, Quaternion.LookRotation(MathHelper.ZeroVectorY(currentMotion).normalized), 0.3f);
 			SM.myInputs.transform.rotation = targetRot;
 		}
 	}
@@ -245,9 +245,8 @@ public class Player_SprintState : State
 	{
 		float adjustedSpeed = sprintSpeed - (sprintSpeed * (SM.StabilityPercentage() / 100) * 0.5f);
 		targetDirection = MathHelper.CameraAdjustedVector(Camera.main, SM.myInputs.MoveInput);
-		currentMotion = Vector3.SmoothDamp(currentMotion, targetDirection * adjustedSpeed, ref velocityRef, 0.16f);
-		if (!SM.myCController.isGrounded)
-			currentMotion.y = Mathf.SmoothDamp(currentMotion.y, -SM.myStatus.Gravity, ref refGravity, 1f);
+		currentMotion = Vector3.SmoothDamp(currentMotion, targetDirection * adjustedSpeed, ref velocityRef, 0.2f);
+		currentMotion.y = -SM.myStatus.Gravity;
 
 		return currentMotion;
 	}
@@ -306,17 +305,20 @@ public class Player_JumpState : State
 			jumpCounter = 0f;
 			SM.myStatus.SetCooldown("Coyote", 0.16f);
 		}
-		
+
+		SM.myInputs.ResetInput("Jump");
 	}
 
 	public override void UpdateState()
 	{
 		if (jumpCounter > 0)
 			jumpCounter -= Time.deltaTime;
-		if (jumpCounter > 0 && SM.myInputs.GetInput("Jump"))
+		if (jumpCounter > 0 && SM.myInputs.GetInput("JumpHold"))
 			currentMotion.y = jumpSpeed;
-		
-		if (SM.myInputs.GetInput("Jump") && !SM.myStatus.GetCooldown("Coyote"))
+
+		if (SM.myInputs.GetInput("Jump") && (Vector3.Angle(Vector3.up, SM.myStatus.hitNormal) > 80) && SM.myStatus.isTouchingWall) //Check if touching wall
+			SM.SwitchState("WallJump");
+		else if (SM.myInputs.GetInput("Jump") && !SM.myStatus.GetCooldown("Coyote"))
 			SM.SwitchState("Jump");
 		else if (SM.myInputs.GetInput("Dodge"))
 			SM.SwitchState("Dodge");
@@ -431,37 +433,99 @@ public class Player_SlideState : State
 public class Player_WallJumpState : State
 {
 	//Stronger than a normal jump, so figure that out
+	//2 Stages
+	//Launch Stage
+	//Jump Stage (Should work like the normal jump state after launch? But no jump holds and jump speed might differ per angle of approach?)
 	Vector3 currentMotion;
-	float moveSpeed = 0f;
+	float moveSpeed = 12f;
 
 	Quaternion targetRot;
 	Vector3 targetDirection;
 
-	float jumpSpeed = 12f;
-	float jumpCounter = 0;
+	Vector3 JumpTrajectory;
+
+	float jumpSpeed = 20f;
 	float refVelocity;
+
+	float animationHold = 0.2f; // **TEMPORARY** //
+	bool launched = false;
 
 	public Player_WallJumpState(string name, StateMachine stateMachine) : base(name, stateMachine) { }
 
 	public override void StartState()
 	{
-		//Determine Vector of direction of approach
-		//Use Speed and Vector to Calculate trajectory and launch
+		//Record Trajectory - Determine Vector of direction of approach
+		if (SM.myInputs.MoveInput != Vector2.zero)
+			targetDirection = MathHelper.CameraAdjustedVector(Camera.main, SM.myInputs.MoveInput);
+		else
+			targetDirection = SM.myModel.transform.forward;
+
+		JumpTrajectory = Vector3.zero;
+		JumpTrajectory = Vector3.Reflect(targetDirection * moveSpeed, SM.myStatus.hitNormal);
+		JumpTrajectory.y = jumpSpeed;
+
+		//Snap to Wall for animation if possible
+		// --
+
+		//Stop - Wait a Minute
+		currentMotion = Vector3.zero;
+		animationHold = 0.1f; // **TEMPORARY** //
+		launched = false;
 	}
 
+	
 	public override void UpdateState()
 	{
+		//Wait a sec for animation I guess
+		//Modify trajectory with input?
+		//Launch - Hold for launch strength?
 		//Same Shenanigans
+
+		if (animationHold > 0)
+			animationHold -= Time.deltaTime;
+		else if (launched == false)
+		{
+			currentMotion = JumpTrajectory;
+			launched = true;
+		}
+		else
+		{
+			if (SM.myInputs.GetInput("Jump") && (Vector3.Angle(Vector3.up, SM.myStatus.hitNormal) > 80) && SM.myStatus.isTouchingWall) //Check if touching wall
+				SM.SwitchState("WallJump");
+			else if (SM.myInputs.GetInput("Dodge"))
+				SM.SwitchState("Dodge");
+			else if (SM.myCController.isGrounded)
+			{
+				if (!SM.myStatus.isStableGround)
+					SM.SwitchState("Slide");
+				else if (SM.myInputs.MoveInput != Vector2.zero && currentMotion.y <= 0 && SM.myInputs.GetInput("DodgeHold"))
+					SM.SwitchState("Sprint");
+				else if (SM.myInputs.MoveInput != Vector2.zero && currentMotion.y <= 0)
+					SM.SwitchState("Move");
+				else if (currentMotion.y <= 0)
+					SM.SwitchState("Idle");
+			}
+		}
 	}
 
 	public override Vector3 MotionUpdate()
 	{
 		//Same Shenanigans
+		if (launched) currentMotion.y = Mathf.SmoothDamp(currentMotion.y, -SM.myStatus.Gravity, ref refVelocity, 1f);
 		return currentMotion;
+	}
+
+	public override void FixedUpdateState()
+	{
+		if (MathHelper.ZeroVectorY(currentMotion) != Vector3.zero)
+		{
+			targetRot = Quaternion.Lerp(SM.myModel.transform.rotation, Quaternion.LookRotation(MathHelper.ZeroVectorY(currentMotion).normalized), 0.2f);
+			SM.myInputs.transform.rotation = targetRot;
+		}
 	}
 
 	public override void EndState()
 	{
-
+		SM.myStatus.SetCooldown("WallJump", 0.1f);
 	}
 }

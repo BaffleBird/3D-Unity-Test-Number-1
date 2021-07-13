@@ -16,9 +16,6 @@ public class StateMachine : MonoBehaviour
 	[SerializeField] GameObject _myModel = null;
 	public GameObject myModel => _myModel;
 
-	[SerializeField] Collider _myCollider = null;
-	public Collider myCollider => _myCollider;
-
 	protected Dictionary<string, State> States = new Dictionary<string, State>();
 	protected State currentState = null;
 	protected string _previousState = "";
@@ -58,20 +55,10 @@ public class StateMachine : MonoBehaviour
 	public void SwitchState(string stateName)
 	{
 		if (myStatus.GetCooldown(stateName))
+		{
 			SwitchState(States[stateName]);
-	}
-
-	//PHYSICS CHECKS
-	protected void WallCheck(float rayLength)
-	{
-		RaycastHit hit;
-
-		if (Physics.Raycast(transform.position, MathHelper.ZeroVectorY(myStatus.currentMovement).normalized, out hit, rayLength, terrainMask))
-			myStatus.wallSlope = (Vector3.Angle(hit.normal, Vector3.down));
-		else
-			myStatus.wallSlope = 0;
-
-		//Debug.DrawRay(transform.position, MathHelper.ZeroVectorY(myStatus.currentMovement).normalized * rayLength, Color.cyan);
+			//Debug.Log(stateName);
+		}
 	}
 
 	protected virtual void StabilityCheck()

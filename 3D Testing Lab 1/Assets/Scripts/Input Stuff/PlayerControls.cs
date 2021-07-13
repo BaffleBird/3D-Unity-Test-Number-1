@@ -57,6 +57,22 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Shoot"",
+                    ""type"": ""Button"",
+                    ""id"": ""344b253f-4194-430a-9fe8-d6b9bd6aa2db"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Look"",
+                    ""type"": ""Value"",
+                    ""id"": ""0e268cbb-82bb-41cf-a979-9b15c2302aac"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -169,6 +185,28 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""action"": ""Dodge"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""96f3754b-80d8-438d-82b3-2d4dccc67179"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Shoot"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f7673e3f-b50a-45b0-a287-7eb107e08588"",
+                    ""path"": ""<Mouse>/delta"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -182,6 +220,8 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         m_InGameActions_Aim = m_InGameActions.FindAction("Aim", throwIfNotFound: true);
         m_InGameActions_Zoom = m_InGameActions.FindAction("Zoom", throwIfNotFound: true);
         m_InGameActions_Dodge = m_InGameActions.FindAction("Dodge", throwIfNotFound: true);
+        m_InGameActions_Shoot = m_InGameActions.FindAction("Shoot", throwIfNotFound: true);
+        m_InGameActions_Look = m_InGameActions.FindAction("Look", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -236,6 +276,8 @@ public class @PlayerControls : IInputActionCollection, IDisposable
     private readonly InputAction m_InGameActions_Aim;
     private readonly InputAction m_InGameActions_Zoom;
     private readonly InputAction m_InGameActions_Dodge;
+    private readonly InputAction m_InGameActions_Shoot;
+    private readonly InputAction m_InGameActions_Look;
     public struct InGameActionsActions
     {
         private @PlayerControls m_Wrapper;
@@ -245,6 +287,8 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         public InputAction @Aim => m_Wrapper.m_InGameActions_Aim;
         public InputAction @Zoom => m_Wrapper.m_InGameActions_Zoom;
         public InputAction @Dodge => m_Wrapper.m_InGameActions_Dodge;
+        public InputAction @Shoot => m_Wrapper.m_InGameActions_Shoot;
+        public InputAction @Look => m_Wrapper.m_InGameActions_Look;
         public InputActionMap Get() { return m_Wrapper.m_InGameActions; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -269,6 +313,12 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @Dodge.started -= m_Wrapper.m_InGameActionsActionsCallbackInterface.OnDodge;
                 @Dodge.performed -= m_Wrapper.m_InGameActionsActionsCallbackInterface.OnDodge;
                 @Dodge.canceled -= m_Wrapper.m_InGameActionsActionsCallbackInterface.OnDodge;
+                @Shoot.started -= m_Wrapper.m_InGameActionsActionsCallbackInterface.OnShoot;
+                @Shoot.performed -= m_Wrapper.m_InGameActionsActionsCallbackInterface.OnShoot;
+                @Shoot.canceled -= m_Wrapper.m_InGameActionsActionsCallbackInterface.OnShoot;
+                @Look.started -= m_Wrapper.m_InGameActionsActionsCallbackInterface.OnLook;
+                @Look.performed -= m_Wrapper.m_InGameActionsActionsCallbackInterface.OnLook;
+                @Look.canceled -= m_Wrapper.m_InGameActionsActionsCallbackInterface.OnLook;
             }
             m_Wrapper.m_InGameActionsActionsCallbackInterface = instance;
             if (instance != null)
@@ -288,6 +338,12 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @Dodge.started += instance.OnDodge;
                 @Dodge.performed += instance.OnDodge;
                 @Dodge.canceled += instance.OnDodge;
+                @Shoot.started += instance.OnShoot;
+                @Shoot.performed += instance.OnShoot;
+                @Shoot.canceled += instance.OnShoot;
+                @Look.started += instance.OnLook;
+                @Look.performed += instance.OnLook;
+                @Look.canceled += instance.OnLook;
             }
         }
     }
@@ -299,5 +355,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         void OnAim(InputAction.CallbackContext context);
         void OnZoom(InputAction.CallbackContext context);
         void OnDodge(InputAction.CallbackContext context);
+        void OnShoot(InputAction.CallbackContext context);
+        void OnLook(InputAction.CallbackContext context);
     }
 }

@@ -14,6 +14,7 @@ public class PlayerSM : StateMachine
 		States.Add("Dodge", new Player_DodgeState("Dodge", this)); myStatus.SetCooldown("Dodge", 0);
 		States.Add("Sprint", new Player_SprintState("Sprint", this));
 		States.Add("Slide", new Player_SlideState("Slide", this));
+		States.Add("WallJump", new Player_WallJumpState("WallJump", this)); myStatus.SetCooldown("WallJump", 0);
 
 		currentState = States["Idle"];
 		_previousState = currentState.StateName;
@@ -24,6 +25,10 @@ public class PlayerSM : StateMachine
 	{
 		base.FixedUpdate();
 		StabilityCheck();
+
+		myStatus.isTouchingWall = (myCController.collisionFlags == CollisionFlags.Sides);
+
+
 		//TextUpdate.Instance.SetText("Hit Normal", (Vector3.Angle(Vector3.up, myStatus.hitNormal).ToString()));
 		//TextUpdate.Instance.SetText("Grounded", myCController.isGrounded.ToString());
 	}
