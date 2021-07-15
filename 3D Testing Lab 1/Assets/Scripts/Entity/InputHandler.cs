@@ -10,9 +10,11 @@ public class InputHandler : MonoBehaviour
 
 	protected Vector2 pointerInput = new Vector2();
 	public Vector2 PointerInput => pointerInput;
+	public void ResetPointerInput() { pointerInput = Vector2.zero; }
 
 	protected Vector3 pointerTarget = new Vector3();
 	public Vector3 PointerTarget => pointerTarget;
+
 
 	protected Dictionary<string, bool> inputs = new Dictionary<string, bool>();
 

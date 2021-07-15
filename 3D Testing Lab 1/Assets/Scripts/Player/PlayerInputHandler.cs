@@ -37,13 +37,8 @@ public class PlayerInputHandler : InputHandler
 		playerControls.InGameActions.Dodge.canceled += ctx => inputs["DodgeHold"] = false;
 		playerControls.InGameActions.Dodge.canceled += ctx => inputs["Dodge"] = false;
 
-		playerControls.InGameActions.Dodge.performed += ctx => inputs["Shoot"] = true;
-		playerControls.InGameActions.Dodge.canceled += ctx => inputs["Shoot"] = false;
-	}
-
-	private void LateUpdate()
-	{
-		pointerInput = Vector2.zero;
+		playerControls.InGameActions.Shoot.performed += ctx => inputs["Shoot"] = true;
+		playerControls.InGameActions.Shoot.canceled += ctx => inputs["Shoot"] = false;
 	}
 
 	private void OnEnable()

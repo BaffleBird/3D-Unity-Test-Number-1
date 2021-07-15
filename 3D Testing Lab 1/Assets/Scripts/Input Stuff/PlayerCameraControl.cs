@@ -4,16 +4,16 @@ using UnityEngine;
 using Cinemachine;
 using UnityEngine.InputSystem;
 
-
 public class PlayerCameraControl : MonoBehaviour
 {
 	Transform parentTransform;
 	Vector3 parentOffset;
 
 	[SerializeField] PlayerInputHandler playerInput;
-	[SerializeField] CinemachineVirtualCamera CM_virtualCamera;
 	[SerializeField] CinemachineCameraOffset CM_CameraOffset;
-	[SerializeField] Cinemachine3rdPersonAim CM_camera3rdPersonAim;
+
+	[SerializeField] GameObject moveCamera;
+	[SerializeField] GameObject aimCamera;
 
 	[Header("Look Controls")]
 	[SerializeField] float sensitivity = 0.5f;
@@ -43,13 +43,24 @@ public class PlayerCameraControl : MonoBehaviour
 
 	private void Update()
 	{
-		UpdateLook();
-		UpdateZoom();
+		if (playerInput.GetInput("Shoot") && !aimCamera.activeInHierarchy)
+		{
+			moveCamera.SetActive(false);
+			aimCamera.SetActive(true);
+		}
+		else if (!playerInput.GetInput("Shoot") && !moveCamera.activeInHierarchy)
+		{
+			moveCamera.SetActive(true);
+			aimCamera.SetActive(false);
+		}
 	}
 
-	private void LateUpdate()
+	private void FixedUpdate()
 	{
-		transform.position = Vector3.Lerp(transform.position, parentTransform.position + parentOffset, 0.2f);
+		transform.position = Vector3.Lerp(transform.position, parentTransform.position + parentOffset, 0.5f);
+		UpdateLook();
+		UpdateZoom();
+		playerInput.ResetPointerInput();
 	}
 
 	public void UpdateLook()
@@ -57,10 +68,10 @@ public class PlayerCameraControl : MonoBehaviour
 		//TextUpdate.Instance.SetText("Mouse Input", playerInput.PointerInput.ToString());
 
 		// Horizontal Camera Rotation Input
-		xVelocity = Mathf.Lerp(xVelocity, playerInput.PointerInput.x * sensitivity, snappiness * Time.deltaTime);
+		xVelocity = Mathf.Lerp(xVelocity, playerInput.PointerInput.x * sensitivity, snappiness * Time.fixedDeltaTime);
 
 		// Vertical Camera Rotation Input
-		yVelocity = Mathf.Lerp(yVelocity, -playerInput.PointerInput.y * sensitivity, snappiness * Time.deltaTime);
+		yVelocity = Mathf.Lerp(yVelocity, -playerInput.PointerInput.y * sensitivity, snappiness * Time.fixedDeltaTime);
 
 		transform.Rotate(yVelocity, xVelocity, 0);
 
