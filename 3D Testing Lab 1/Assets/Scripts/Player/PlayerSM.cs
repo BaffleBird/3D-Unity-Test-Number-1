@@ -21,6 +21,16 @@ public class PlayerSM : StateMachine
 		currentState.StartState();
 	}
 
+	protected override void Update()
+	{
+		base.Update();
+
+		myAnimator.SetFloat("y_input", myInputs.MoveInput.y);
+		myAnimator.SetFloat("x_input", myInputs.MoveInput.x);
+		myAnimator.SetFloat("y_motion", myStatus.currentMovement.z);
+		myAnimator.SetFloat("x_motion", myStatus.currentMovement.x);
+	}
+
 	protected override void FixedUpdate()
 	{
 		base.FixedUpdate();
@@ -30,7 +40,7 @@ public class PlayerSM : StateMachine
 
 
 		//TextUpdate.Instance.SetText("Hit Normal", (Vector3.Angle(Vector3.up, myStatus.hitNormal).ToString()));
-		//TextUpdate.Instance.SetText("Grounded", myCController.isGrounded.ToString());
+		TextUpdate.Instance.SetText("Grounded", myCController.isGrounded.ToString());
 	}
 
 	private void OnControllerColliderHit(ControllerColliderHit hit)

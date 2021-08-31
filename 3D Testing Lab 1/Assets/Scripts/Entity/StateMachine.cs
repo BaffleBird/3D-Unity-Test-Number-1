@@ -16,6 +16,9 @@ public class StateMachine : MonoBehaviour
 	[SerializeField] GameObject _myModel = null;
 	public GameObject myModel => _myModel;
 
+	[SerializeField] Animator _myAnimator = null;
+	public Animator myAnimator => _myAnimator;
+
 	protected Dictionary<string, State> States = new Dictionary<string, State>();
 	protected State currentState = null;
 	protected string _previousState = "";

@@ -18,6 +18,8 @@ public class Player_IdleState : State
 		currentMotion.y = 0;
 		xVelocity = 0;
 		yVelocity = 0;
+
+		SM.myAnimator.SetTrigger("Idle");
 	}
 
 	public override void UpdateState()
@@ -44,7 +46,7 @@ public class Player_IdleState : State
 
 	public override void EndState()
 	{
-
+		SM.myAnimator.ResetTrigger("Idle");
 	}
 }
 
@@ -68,6 +70,8 @@ public class Player_MoveState : State
 	{
 		currentMotion = SM.myStatus.currentMovement;
 		currentMotion.y = 0;
+
+		SM.myAnimator.SetTrigger("Move");
 	}
 
 	public override void UpdateState()
@@ -132,7 +136,7 @@ public class Player_MoveState : State
 
 	public override void EndState()
 	{
-
+		SM.myAnimator.ResetTrigger("Move");
 	}
 }
 
@@ -161,6 +165,9 @@ public class Player_DodgeState : State
 
 		dodgeCounter = 0.18f;
 		SM.myInputs.ResetInput("Dodge");
+
+		//SM.myAnimator.SetTrigger("Dodge");
+		SM.myAnimator.Play("Dodge");
 	}
 
 	public override void UpdateState()
@@ -189,7 +196,7 @@ public class Player_DodgeState : State
 			currentMotion = Vector3.SmoothDamp(currentMotion, Vector3.zero, ref velocityRef, 0.16f);
 
 		if (!SM.myCController.isGrounded)
-			currentMotion.y = Mathf.SmoothDamp(currentMotion.y, -SM.myStatus.Gravity * 0.25f, ref refGravity, 1f);
+			currentMotion.y = Mathf.SmoothDamp(currentMotion.y, -SM.myStatus.Gravity, ref refGravity, 1f);
 
 		return currentMotion;
 	}
@@ -206,6 +213,7 @@ public class Player_DodgeState : State
 	public override void EndState()
 	{
 		SM.myStatus.SetCooldown("Dodge", 0.25f);
+		SM.myAnimator.ResetTrigger("Dodge");
 	}
 }
 
@@ -226,6 +234,8 @@ public class Player_SprintState : State
 	{
 		currentMotion = SM.myStatus.currentMovement;
 		currentMotion.y = 0;
+
+		SM.myAnimator.SetTrigger("Sprint");
 	}
 
 	public override void UpdateState()
@@ -238,7 +248,6 @@ public class Player_SprintState : State
 			SM.SwitchState("Move");
 		else if (SM.myInputs.MoveInput == Vector2.zero)
 			SM.SwitchState("Idle");
-
 	}
 
 	public override Vector3 MotionUpdate()
@@ -262,7 +271,7 @@ public class Player_SprintState : State
 
 	public override void EndState()
 	{
-
+		SM.myAnimator.ResetTrigger("Sprint");
 	}
 }
 
@@ -307,6 +316,7 @@ public class Player_JumpState : State
 		}
 
 		SM.myInputs.ResetInput("Jump");
+		SM.myAnimator.SetTrigger("Jump");
 	}
 
 	public override void UpdateState()
@@ -354,6 +364,7 @@ public class Player_JumpState : State
 	public override void EndState()
 	{
 		SM.myStatus.SetCooldown("Jump", 0.1f);
+		SM.myAnimator.ResetTrigger("Jump");
 	}
 }
 
@@ -465,12 +476,15 @@ public class Player_WallJumpState : State
 		JumpTrajectory.y = jumpSpeed;
 
 		//Snap to Wall for animation if possible
-		// --
+		SM.myAnimator.Play("Wall Jump");
+		targetRot = Quaternion.Lerp(SM.myModel.transform.rotation, Quaternion.LookRotation(MathHelper.ZeroVectorY(SM.myStatus.hitNormal)), 0.2f);
+		SM.myInputs.transform.rotation = targetRot;
 
 		//Stop - Wait a Minute
 		currentMotion = Vector3.zero;
 		animationHold = 0.1f; // **TEMPORARY** //
 		launched = false;
+
 	}
 
 	
@@ -487,6 +501,7 @@ public class Player_WallJumpState : State
 		{
 			currentMotion = JumpTrajectory;
 			launched = true;
+			SM.myAnimator.SetTrigger("Jump");
 		}
 		else
 		{
@@ -517,11 +532,12 @@ public class Player_WallJumpState : State
 
 	public override void FixedUpdateState()
 	{
-		if (MathHelper.ZeroVectorY(currentMotion) != Vector3.zero)
+		if (MathHelper.ZeroVectorY(currentMotion) != Vector3.zero && animationHold <= 0)
 		{
 			targetRot = Quaternion.Lerp(SM.myModel.transform.rotation, Quaternion.LookRotation(MathHelper.ZeroVectorY(currentMotion).normalized), 0.2f);
 			SM.myInputs.transform.rotation = targetRot;
 		}
+		
 	}
 
 	public override void EndState()

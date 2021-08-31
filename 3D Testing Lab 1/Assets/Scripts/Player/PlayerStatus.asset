@@ -12,10 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d857f3fe36204d438acabc3da988361, type: 3}
   m_Name: PlayerStatus
   m_EditorClassIdentifier: 
-  gravity: 20
-  isGrounded: 1
-  groundSlope: 0
-  wallSlope: 100.97875
+  gravity: 22
   isStableGround: 1
-  hitNormal: {x: 0, y: 0, z: 0}
-  currentMovement: {x: -0.0024076174, y: 0, z: -0.002540187}
+  isTouchingWall: 0
+  hitNormal: {x: 0, y: 1, z: 0.0000038146973}
+  currentMovement: {x: -0.32905412, y: -22, z: 0.9768842}

@@ -112,7 +112,7 @@ public class PlayerCameraControl : MonoBehaviour
 		if (CM_CameraOffset.m_Offset.z != zoomIndex)
 		{
 			CM_CameraOffset.m_Offset.z = Mathf.Lerp(CM_CameraOffset.m_Offset.z, zoomIndex, zoomLerp);
-			TextUpdate.Instance.SetText("Zoom Index", zoomIndex.ToString());
+			//TextUpdate.Instance.SetText("Zoom Index", zoomIndex.ToString());
 		}
 	}
 }
