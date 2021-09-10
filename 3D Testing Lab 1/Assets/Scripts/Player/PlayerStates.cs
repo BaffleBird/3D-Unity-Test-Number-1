@@ -151,6 +151,8 @@ public class Player_DodgeState : State
 	Vector3 targetDirection;
 
 	float dodgeSpeed = 14f;
+	float dodgeCount = 0.2f;
+	float dodgeCancellable = 0.1f;
 	float dodgeCounter = 0f;
 
 	public Player_DodgeState(string name, StateMachine stateMachine) : base(name, stateMachine) { }
@@ -163,11 +165,11 @@ public class Player_DodgeState : State
 			targetDirection = SM.myModel.transform.forward;
 		currentMotion = targetDirection.normalized * dodgeSpeed;
 
-		dodgeCounter = 0.18f;
+		dodgeCounter = dodgeCount;
 		SM.myInputs.ResetInput("Dodge");
 
-		//SM.myAnimator.SetTrigger("Dodge");
-		SM.myAnimator.Play("Dodge");
+		SM.myAnimator.SetTrigger("Dodge");
+		//SM.myAnimator.Play("Dodge");
 	}
 
 	public override void UpdateState()
@@ -178,14 +180,19 @@ public class Player_DodgeState : State
 			SM.SwitchState("Slide");
 		else if (SM.myInputs.GetInput("Jump") && SM.myCController.isGrounded)
 			SM.SwitchState("Jump");
-		else if (dodgeCounter <= 0 && SM.myCController.isGrounded && SM.myInputs.MoveInput != Vector2.zero && SM.myInputs.GetInput("DodgeHold"))
-			SM.SwitchState("Sprint");
-		else if (dodgeCounter <= 0 && SM.myCController.isGrounded && SM.myInputs.MoveInput != Vector2.zero)
-			SM.SwitchState("Move");
-		else if (dodgeCounter <= 0 && !SM.myCController.isGrounded)
-			SM.SwitchState("Jump");
-		else if (dodgeCounter <= 0 && currentMotion.sqrMagnitude != 0 && SM.myCController.isGrounded)
-			SM.SwitchState("Idle");
+		else if (dodgeCounter <= 0)
+		{
+			if (SM.myCController.isGrounded && SM.myInputs.MoveInput != Vector2.zero && SM.myInputs.GetInput("DodgeHold"))
+				SM.SwitchState("Sprint");
+			else if (!SM.myCController.isGrounded)
+				SM.SwitchState("Jump");
+			else if (SM.myCController.isGrounded && SM.myInputs.MoveInput != Vector2.zero)
+				SM.SwitchState("Move");
+			else if (currentMotion.sqrMagnitude != 0 && SM.myCController.isGrounded)
+				SM.SwitchState("Idle");
+		}
+		
+
 	}
 
 	public override Vector3 MotionUpdate()
