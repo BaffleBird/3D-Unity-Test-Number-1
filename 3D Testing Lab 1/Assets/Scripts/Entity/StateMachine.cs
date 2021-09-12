@@ -10,7 +10,7 @@ public class StateMachine : MonoBehaviour
 	[SerializeField] InputHandler _myInputs = null;
 	public InputHandler myInputs => _myInputs;
 
-	[SerializeField] CharacterController _myCController;
+	[SerializeField] CharacterController _myCController = null;
 	public CharacterController myCController => _myCController;
 
 	[SerializeField] GameObject _myModel = null;
@@ -23,6 +23,7 @@ public class StateMachine : MonoBehaviour
 	protected State currentState = null;
 	protected string _previousState = "";
 	public string previousState { get { return _previousState; } }
+	public string currentStateName { get { return currentState.StateName; } }
 
 
 	LayerMask terrainMask;
@@ -36,7 +37,6 @@ public class StateMachine : MonoBehaviour
 		if (currentState != null)
 			currentState.UpdateState();
 		myStatus.UpdateCooldowns();
-		TextUpdate.Instance.SetText("State", currentState.StateName);
 	}
 
 	protected virtual void FixedUpdate()
@@ -44,6 +44,11 @@ public class StateMachine : MonoBehaviour
 		currentState.FixedUpdateState();
 		myCController.Move(currentState.MotionUpdate() * Time.fixedDeltaTime);
 		myStatus.currentMovement = currentState.MotionUpdate();
+	}
+
+	protected virtual void LateUpdate()
+	{
+		currentState.LateUpdateState();
 	}
 
 	//STATE MANAGEMENT
@@ -60,7 +65,6 @@ public class StateMachine : MonoBehaviour
 		if (myStatus.GetCooldown(stateName))
 		{
 			SwitchState(States[stateName]);
-			//Debug.Log(stateName);
 		}
 	}
 
@@ -100,6 +104,7 @@ public abstract class State
 	public abstract void StartState();
 	public abstract void UpdateState();
 	public virtual void FixedUpdateState() { }
+	public virtual void LateUpdateState() { }
 	public abstract Vector3 MotionUpdate();
 	public abstract void EndState();
 }

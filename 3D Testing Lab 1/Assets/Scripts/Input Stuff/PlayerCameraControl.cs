@@ -11,6 +11,7 @@ public class PlayerCameraControl : MonoBehaviour
 
 	[SerializeField] PlayerInputHandler playerInput;
 	[SerializeField] CinemachineCameraOffset CM_CameraOffset;
+	[SerializeField] CinemachineCameraOffset CM_AimCameraOffset;
 
 	[SerializeField] GameObject moveCamera;
 	[SerializeField] GameObject aimCamera;
@@ -31,6 +32,7 @@ public class PlayerCameraControl : MonoBehaviour
 	[SerializeField] float zoomMax = 5f;
 
 	float zoomIndex;
+	float zoomSideOffset;
 
 	private void Start()
 	{
@@ -39,6 +41,7 @@ public class PlayerCameraControl : MonoBehaviour
 		transform.parent = null;
 
 		zoomIndex = CM_CameraOffset.m_Offset.z;
+		zoomSideOffset = CM_AimCameraOffset.m_Offset.x;
 	}
 
 	private void Update()
@@ -52,6 +55,12 @@ public class PlayerCameraControl : MonoBehaviour
 		{
 			moveCamera.SetActive(true);
 			aimCamera.SetActive(false);
+		}
+
+		if (aimCamera.activeSelf && playerInput.GetInput("CameraSide"))
+		{
+			zoomSideOffset = zoomSideOffset > 0? -1 : 1;
+			playerInput.ResetInput("CameraSide");
 		}
 	}
 
@@ -114,5 +123,12 @@ public class PlayerCameraControl : MonoBehaviour
 			CM_CameraOffset.m_Offset.z = Mathf.Lerp(CM_CameraOffset.m_Offset.z, zoomIndex, zoomLerp);
 			//TextUpdate.Instance.SetText("Zoom Index", zoomIndex.ToString());
 		}
+
+		if (CM_CameraOffset.m_Offset.x != zoomSideOffset)
+		{
+			CM_AimCameraOffset.m_Offset.x = Mathf.Lerp(CM_AimCameraOffset.m_Offset.x, zoomSideOffset, zoomLerp);
+			//TextUpdate.Instance.SetText("Zoom Side", zoomSideOffset.ToString());
+		}
+
 	}
 }

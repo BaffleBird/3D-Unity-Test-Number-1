@@ -29,6 +29,8 @@ public class PlayerSM : StateMachine
 		myAnimator.SetFloat("x_input", myInputs.MoveInput.x);
 		myAnimator.SetFloat("y_motion", myStatus.currentMovement.z);
 		myAnimator.SetFloat("x_motion", myStatus.currentMovement.x);
+
+		TextUpdate.Instance.SetText("Player State", currentState.StateName);
 	}
 
 	protected override void FixedUpdate()

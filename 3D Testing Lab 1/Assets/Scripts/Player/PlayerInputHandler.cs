@@ -20,6 +20,7 @@ public class PlayerInputHandler : InputHandler
 		inputs.Add("Dodge", false);
 		inputs.Add("DodgeHold", false);
 		inputs.Add("Shoot", false);
+		inputs.Add("CameraSide", false);
 
 		playerControls.InGameActions.Movement.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
 		playerControls.InGameActions.Movement.canceled += ctx => moveInput = ctx.ReadValue<Vector2>();
@@ -39,6 +40,9 @@ public class PlayerInputHandler : InputHandler
 
 		playerControls.InGameActions.Shoot.performed += ctx => inputs["Shoot"] = true;
 		playerControls.InGameActions.Shoot.canceled += ctx => inputs["Shoot"] = false;
+
+		playerControls.InGameActions.CameraSide.started += ctx => inputs["CameraSide"] = true;
+		playerControls.InGameActions.CameraSide.canceled += ctx => inputs["CameraSide"] = false;
 	}
 
 	private void OnEnable()

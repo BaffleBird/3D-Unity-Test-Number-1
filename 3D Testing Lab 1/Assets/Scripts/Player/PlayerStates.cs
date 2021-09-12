@@ -92,6 +92,7 @@ public class Player_MoveState : State
 	{
 		targetDirection = MathHelper.CameraAdjustedVector(Camera.main, SM.myInputs.MoveInput);
 		Vector3 targetMotion = Vector3.SmoothDamp(currentMotion, targetDirection * moveSpeed, ref velocityRef, 0.16f);
+
 		currentMotion.x = targetMotion.x;
 		currentMotion.z = targetMotion.z;
 		currentMotion.y = -SM.myStatus.Gravity;
@@ -130,7 +131,7 @@ public class Player_MoveState : State
 		if (MathHelper.ZeroVectorY(currentMotion) != Vector3.zero)
 		{
 			targetRot = Quaternion.Lerp(SM.myModel.transform.rotation, Quaternion.LookRotation(MathHelper.ZeroVectorY(currentMotion).normalized), 0.2f);
-			SM.myInputs.transform.rotation = targetRot;
+			SM.transform.rotation = targetRot;
 		}
 	}
 
@@ -151,8 +152,8 @@ public class Player_DodgeState : State
 	Vector3 targetDirection;
 
 	float dodgeSpeed = 14f;
-	float dodgeCount = 0.2f;
-	float dodgeCancellable = 0.1f;
+	float dodgeCount = 0.3f;
+	//float dodgeCancellable = 0.1f;
 	float dodgeCounter = 0f;
 
 	public Player_DodgeState(string name, StateMachine stateMachine) : base(name, stateMachine) { }
@@ -491,7 +492,6 @@ public class Player_WallJumpState : State
 		currentMotion = Vector3.zero;
 		animationHold = 0.1f; // **TEMPORARY** //
 		launched = false;
-
 	}
 
 	
@@ -513,9 +513,15 @@ public class Player_WallJumpState : State
 		else
 		{
 			if (SM.myInputs.GetInput("Jump") && (Vector3.Angle(Vector3.up, SM.myStatus.hitNormal) > 80) && SM.myStatus.isTouchingWall) //Check if touching wall
+			{
 				SM.SwitchState("WallJump");
+				SM.myStatus.SetCooldown("WallJump", 0.3f);
+			}
 			else if (SM.myInputs.GetInput("Dodge"))
+			{
 				SM.SwitchState("Dodge");
+				SM.myStatus.SetCooldown("WallJump", 0.75f);
+			}
 			else if (SM.myCController.isGrounded)
 			{
 				if (!SM.myStatus.isStableGround)

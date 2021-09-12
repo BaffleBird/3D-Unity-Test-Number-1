@@ -64,6 +64,29 @@ public static class MathHelper
 		return (camX * movementVector.x) + (camY * movementVector.y);
 	}
 
+	//Aligns a Vector to Tranform
+	public static Vector3 TransformAdjustedVector(Transform targetTransform, Vector2 movementVector)
+	{
+		Vector3 targetX;
+		Vector3 targetY;
+		targetX = targetTransform.right;
+		targetY = targetTransform.forward;
+		targetX.y = 0;
+		targetY.y = 0;
+		targetX.Normalize();
+		targetY.Normalize();
+
+		return (targetX * movementVector.x) + (targetY * movementVector.y);
+	}
+
+	//Aligns a Vector to a Vector?
+	public static Vector3 VectorAdjustedVector(Vector3 targetVector, Vector2 movementVector)
+	{
+		Vector3 targetX = new Vector3(targetVector.z, 0, -targetVector.x).normalized;
+		Vector3 targetY = new Vector3(targetVector.x, 0, targetVector.z).normalized;
+		return (targetX * movementVector.x) + ( targetY * movementVector.y);
+	}
+
 	//Check which direction from a vector
 	public static float AngleDir(Vector3 fwd, Vector3 targetDir, Vector3 up)
 	{
