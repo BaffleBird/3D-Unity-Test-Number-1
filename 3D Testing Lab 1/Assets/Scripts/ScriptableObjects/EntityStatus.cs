@@ -9,6 +9,7 @@ public class EntityStatus : ScriptableObject
 	[SerializeField] float gravity = 0;
 	public float Gravity { get { return gravity; } }
 
+	public string currentState = "";
 	public bool isStableGround = false;
 	public bool isTouchingWall = false;
 	[HideInInspector] public Vector3 hitNormal;

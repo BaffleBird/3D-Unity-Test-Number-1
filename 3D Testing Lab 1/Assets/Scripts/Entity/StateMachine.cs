@@ -23,7 +23,6 @@ public class StateMachine : MonoBehaviour
 	protected State currentState = null;
 	protected string _previousState = "";
 	public string previousState { get { return _previousState; } }
-	public string currentStateName { get { return currentState.StateName; } }
 
 
 	LayerMask terrainMask;
@@ -52,7 +51,7 @@ public class StateMachine : MonoBehaviour
 	}
 
 	//STATE MANAGEMENT
-	protected void SwitchState(State newState)
+	protected virtual void SwitchState(State newState)
 	{
 		currentState.EndState();
 		_previousState = currentState.StateName;

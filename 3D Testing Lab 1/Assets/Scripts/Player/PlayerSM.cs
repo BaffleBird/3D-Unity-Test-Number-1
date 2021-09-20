@@ -45,6 +45,12 @@ public class PlayerSM : StateMachine
 		TextUpdate.Instance.SetText("Grounded", myCController.isGrounded.ToString());
 	}
 
+	protected override void SwitchState(State newState)
+	{
+		base.SwitchState(newState);
+		myStatus.currentState = currentState.StateName;
+	}
+
 	private void OnControllerColliderHit(ControllerColliderHit hit)
 	{
 		myStatus.hitNormal = hit.normal;

@@ -252,7 +252,7 @@ public class Player_SprintState : State
 			SM.SwitchState("Slide");
 		else if (SM.myInputs.GetInput("Jump") || !SM.myCController.isGrounded)
 			SM.SwitchState("Jump");
-		else if (SM.myInputs.MoveInput != Vector2.zero && !SM.myInputs.GetInput("DodgeHold"))
+		else if (SM.myInputs.MoveInput != Vector2.zero && (!SM.myInputs.GetInput("DodgeHold") || SM.myInputs.GetInput("Shoot")))
 			SM.SwitchState("Move");
 		else if (SM.myInputs.MoveInput == Vector2.zero)
 			SM.SwitchState("Idle");
@@ -520,7 +520,7 @@ public class Player_WallJumpState : State
 			else if (SM.myInputs.GetInput("Dodge"))
 			{
 				SM.SwitchState("Dodge");
-				SM.myStatus.SetCooldown("WallJump", 0.75f);
+				SM.myStatus.SetCooldown("WallJump", 1f);
 			}
 			else if (SM.myCController.isGrounded)
 			{

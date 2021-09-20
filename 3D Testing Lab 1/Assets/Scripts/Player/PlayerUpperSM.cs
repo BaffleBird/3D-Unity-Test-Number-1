@@ -6,14 +6,18 @@ using UnityEngine.Animations.Rigging;
 public class PlayerUpperSM : StateMachine
 {
 	//Reference IK Fields
+	[Header("IK Stuff")]
 	[SerializeField] RigBuilder _rigBuilder = null;
-	public RigBuilder RigBuilder => _rigBuilder;
+	public RigBuilder rigBuilder => _rigBuilder;
 
 	[SerializeField] Rig _animationRig = null;
 	public Rig animationRig => _animationRig;
 
 	[SerializeField] GameObject _aimTarget = null;
-	public GameObject bodyAimTarget => _aimTarget;
+	public GameObject aimTarget => _aimTarget;
+
+	[SerializeField] GameObject _aimTarget2 = null;
+	public GameObject bodyAimTarget => _aimTarget2;
 
 	[SerializeField] Transform _gunBarrel = null;
 	public Transform gunBarrel => _gunBarrel;
@@ -63,15 +67,15 @@ public class PlayerUpper_StandyByState : State
 	{
 		if (USM.animationRig.weight > 0)
 		{
-			USM.animationRig.weight = Mathf.Lerp(USM.animationRig.weight, 0, 0.12f);
+			USM.animationRig.weight = Mathf.Lerp(USM.animationRig.weight, 0, 0.04f);
 			if (USM.animationRig.weight < 0.01f)
 			{
 				USM.animationRig.weight = 0;
-				USM.RigBuilder.enabled = false;
+				USM.rigBuilder.enabled = false;
 			}
 		}
 
-		if (SM.myInputs.GetInput("Shoot") && SM.currentStateName != "Dodge") //And not currently not wall jumping or dashing
+		if (SM.myInputs.GetInput("Shoot") && SM.myStatus.currentState != "Dodge" && SM.myStatus.currentState != "Sprint")
 			SM.SwitchState("Shoot");
 	}
 
@@ -91,6 +95,14 @@ public class PlayerUpper_ShootState : State
 	RaycastHit hit;
 	float rayDistance = 100;
 
+	Vector3 targetPoint;
+	float targetSpeed = 15f;
+
+	float maxAngle = 130;
+	bool entered_deadzone = false;
+	float crossEntry = 0;
+	float rotaryAngle = 0;
+
 	public PlayerUpper_ShootState(string name, StateMachine stateMachine, PlayerUpperSM upperStateMachine) : base(name, stateMachine) 
 	{
 		USM = upperStateMachine;
@@ -99,33 +111,59 @@ public class PlayerUpper_ShootState : State
 	public override void StartState()
 	{
 		//Activate IK components
-		USM.RigBuilder.enabled = true;
+		USM.rigBuilder.enabled = true;
 		//Trigger Animation Controller
-		SM.myAnimator.SetTrigger("Shoot");
+		SM.myAnimator.SetBool("Shoot", true);
+		targetPoint = SM.transform.position + (SM.transform.forward * 2f);
 	}
 
 	public override void UpdateState()
 	{
-		if (USM.animationRig.weight < 0.9f)
+		if (USM.animationRig.weight < 1)
 		{
-			USM.animationRig.weight = Mathf.Lerp(USM.animationRig.weight, 1f, 0.12f);
+			USM.animationRig.weight = Mathf.Lerp(USM.animationRig.weight, 1f, 0.1f);
 			if (USM.animationRig.weight > 0.99f) USM.animationRig.weight = 1f;
 		}
 
-		//Raycast from camera and/or the gun and move the Aim Target there
+		//Raycast from camera and/or the gun and set the target
 		LayerMask mask = LayerMask.GetMask("default");
 		if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, rayDistance, mask))
-		{
-			USM.bodyAimTarget.transform.position = hit.point;
-			//If you end up using multiple targets, dis is da way.
-		}
+			targetPoint = hit.point - USM.gunBarrel.position;
 		else
-		{
-			USM.bodyAimTarget.transform.position = Camera.main.transform.position + Camera.main.transform.forward * rayDistance;
-		}
-			
+			targetPoint = (Camera.main.transform.position + Camera.main.transform.forward * rayDistance) - USM.gunBarrel.position;
 
-		if (!SM.myInputs.GetInput("Shoot")) //Or cancelled by Wall jumping or Dashing. Possibly Cancelled on Landing with a short cooldown
+		//Interpolate the Aim Target there
+		USM.aimTarget.transform.position = Vector3.Lerp(USM.aimTarget.transform.position, targetPoint, Time.deltaTime * targetSpeed);
+
+		//Adjust Body target to match
+		//You can get the direction of the target, and which side you're turned to
+		//Try finding the angle from the front
+		float targetAngle = Vector3.Angle(SM.transform.forward, targetPoint);
+		float targetAngleDir = MathHelper.AngleDir(targetPoint, SM.transform.forward) * -1;
+
+		if (targetAngle < maxAngle)
+		{
+			entered_deadzone = false;
+
+			// Use a rotary angle
+			// Lerp said rotary angle towards target angle, this means rotating around the normal way and not trying to skip from 180 to -180
+			// Use Euler to apply said rotary angle to aim target
+			rotaryAngle = Mathf.Lerp(rotaryAngle, targetAngle * targetAngleDir, Time.deltaTime * targetSpeed);
+			Vector3 targetVector = Quaternion.Euler(0, rotaryAngle, 0) * SM.transform.forward;
+			USM.bodyAimTarget.transform.position = Vector3.Lerp(USM.bodyAimTarget.transform.position, SM.transform.position + targetVector, Time.deltaTime * targetSpeed);
+		}
+		else if (targetAngle > maxAngle)
+		{
+			//If entering the deadzone, note which side the entry is
+			if (!entered_deadzone) crossEntry = targetAngleDir;
+			entered_deadzone = true;
+
+			//Currently calculates which side the of the dead zone to lock to
+			Vector3 cappedVector = Quaternion.Euler(0, crossEntry * maxAngle, 0) * SM.transform.forward;
+			USM.bodyAimTarget.transform.position = Vector3.Lerp(USM.bodyAimTarget.transform.position, SM.transform.position + cappedVector, Time.deltaTime * targetSpeed);
+		}
+
+		if (!SM.myInputs.GetInput("Shoot") || SM.myStatus.currentState == "Dodge" || SM.myStatus.currentState == "Sprint")
 			SM.SwitchState("StandyBy");
 	}
 
@@ -136,5 +174,6 @@ public class PlayerUpper_ShootState : State
 
 	public override void EndState()
 	{
+		SM.myAnimator.SetBool("Shoot", false);
 	}
 }

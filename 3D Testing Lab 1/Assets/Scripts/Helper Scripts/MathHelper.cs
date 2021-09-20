@@ -88,7 +88,7 @@ public static class MathHelper
 	}
 
 	//Check which direction from a vector
-	public static float AngleDir(Vector3 fwd, Vector3 targetDir, Vector3 up)
+	public static float AngleDir(Vector3 fwd, Vector3 targetDir, Vector3 up) // With reference to a different up direction
 	{
 		Vector3 perp = Vector3.Cross(fwd, targetDir);
 		float dir = Vector3.Dot(perp, up);
@@ -100,7 +100,7 @@ public static class MathHelper
 		return 0f;
 	}
 
-	public static float AngleDir(Vector3 fwd, Vector3 targetDir)
+	public static float AngleDir(Vector3 fwd, Vector3 targetDir) // Default to Y being up
 	{
 		var dot = fwd.x * -targetDir.z + fwd.z * targetDir.x;
 		if (dot > 0)
