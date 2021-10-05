@@ -22,6 +22,9 @@ public class PlayerUpperSM : StateMachine
 	[SerializeField] Transform _gunBarrel = null;
 	public Transform gunBarrel => _gunBarrel;
 
+	[SerializeField] Animator _gunAnimator = null;
+	public Animator gunAnimator => _gunAnimator;
+
 	protected override void Awake()
 	{
 		base.Awake();
@@ -67,7 +70,7 @@ public class PlayerUpper_StandyByState : State
 	{
 		if (USM.animationRig.weight > 0)
 		{
-			USM.animationRig.weight = Mathf.Lerp(USM.animationRig.weight, 0, 0.04f);
+			USM.animationRig.weight = Mathf.Lerp(USM.animationRig.weight, 0, 0.1f);
 			if (USM.animationRig.weight < 0.01f)
 			{
 				USM.animationRig.weight = 0;
@@ -98,7 +101,7 @@ public class PlayerUpper_ShootState : State
 	Vector3 targetPoint;
 	float targetSpeed = 15f;
 
-	float maxAngle = 130;
+	float maxAngle = 145;
 	bool entered_deadzone = false;
 	float crossEntry = 0;
 	float rotaryAngle = 0;
@@ -114,6 +117,7 @@ public class PlayerUpper_ShootState : State
 		USM.rigBuilder.enabled = true;
 		//Trigger Animation Controller
 		SM.myAnimator.SetBool("Shoot", true);
+		USM.gunAnimator.SetBool("Shooting", true);
 		targetPoint = SM.transform.position + (SM.transform.forward * 2f);
 	}
 
@@ -175,5 +179,6 @@ public class PlayerUpper_ShootState : State
 	public override void EndState()
 	{
 		SM.myAnimator.SetBool("Shoot", false);
+		USM.gunAnimator.SetBool("Shooting", false);
 	}
 }
