@@ -9,7 +9,8 @@ public class PlayerCameraControl : MonoBehaviour
 	Transform parentTransform;
 	Vector3 parentOffset;
 
-	[SerializeField] EntityStatus playerStatus;
+	[SerializeField] StateMachine playerMainSM;
+	[SerializeField] StateMachine playerUpperSM;
 	[SerializeField] PlayerInputHandler playerInput;
 	[SerializeField] CinemachineCameraOffset CM_CameraOffset;
 	[SerializeField] CinemachineCameraOffset CM_AimCameraOffset;
@@ -47,12 +48,16 @@ public class PlayerCameraControl : MonoBehaviour
 
 	private void Update()
 	{
-		if (playerInput.GetInput("Shoot") && !aimCamera.activeInHierarchy && playerStatus.currentState != "Dodge" && playerStatus.currentState != "Sprint")
+		if ((playerUpperSM.currentStateName == "Shoot" || playerUpperSM.currentStateName == "Cannon")
+			&& !aimCamera.activeInHierarchy 
+			&& playerMainSM.currentStateName != "Dodge" && playerMainSM.currentStateName != "Sprint")
 		{
 			moveCamera.SetActive(false);
 			aimCamera.SetActive(true);
 		}
-		else if ((!playerInput.GetInput("Shoot") && !moveCamera.activeInHierarchy) || (playerStatus.currentState == "Dodge" || playerStatus.currentState == "Sprint"))
+		else if ((playerUpperSM.currentStateName != "Shoot" && playerUpperSM.currentStateName != "Cannon")
+			&& !moveCamera.activeInHierarchy
+			|| (playerMainSM.currentStateName == "Dodge" || playerMainSM.currentStateName == "Sprint"))
 		{
 			moveCamera.SetActive(true);
 			aimCamera.SetActive(false);

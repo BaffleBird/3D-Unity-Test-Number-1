@@ -15,7 +15,6 @@ public class InputHandler : MonoBehaviour
 	protected Vector3 pointerTarget = new Vector3();
 	public Vector3 PointerTarget => pointerTarget;
 
-
 	protected Dictionary<string, bool> inputs = new Dictionary<string, bool>();
 
 	public bool GetInput(string s) => inputs[s];

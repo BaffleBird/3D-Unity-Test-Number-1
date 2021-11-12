@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class StateMachine : MonoBehaviour
 {
+	#region MajorComponents
 	[SerializeField] EntityStatus _myStatus = null;
 	public EntityStatus myStatus => _myStatus;
 
@@ -18,12 +19,25 @@ public class StateMachine : MonoBehaviour
 
 	[SerializeField] Animator _myAnimator = null;
 	public Animator myAnimator => _myAnimator;
+	#endregion
 
+	#region StateVariables
 	protected Dictionary<string, State> States = new Dictionary<string, State>();
 	protected State currentState = null;
+	public string currentStateName => currentState.StateName;
 	protected string _previousState = "";
 	public string previousState { get { return _previousState; } }
+	#endregion
 
+	#region TestDelegate
+	public delegate void TestSignal(string signalID);
+	public event TestSignal TestSignalEvent;
+
+	public void FireSignal(string signalID)
+	{
+		TestSignalEvent(signalID);
+	}
+	#endregion
 
 	LayerMask terrainMask;
 	protected virtual void Awake()

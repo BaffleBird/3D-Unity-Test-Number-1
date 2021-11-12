@@ -87,7 +87,7 @@ public static class MathHelper
 		return (targetX * movementVector.x) + ( targetY * movementVector.y);
 	}
 
-	//Check which direction from a vector
+	//Check which direction a vector is from a forward vector (Left or Right, -1 or 1)
 	public static float AngleDir(Vector3 fwd, Vector3 targetDir, Vector3 up) // With reference to a different up direction
 	{
 		Vector3 perp = Vector3.Cross(fwd, targetDir);

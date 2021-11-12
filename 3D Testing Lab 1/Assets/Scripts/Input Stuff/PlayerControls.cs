@@ -81,6 +81,14 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Charge"",
+                    ""type"": ""Button"",
+                    ""id"": ""b655ecd6-ab28-465f-946b-edb804344295"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -226,6 +234,17 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""action"": ""CameraSide"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0a1c0353-6abf-406c-bb61-1eb3caab485a"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Charge"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -242,6 +261,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         m_InGameActions_Shoot = m_InGameActions.FindAction("Shoot", throwIfNotFound: true);
         m_InGameActions_Look = m_InGameActions.FindAction("Look", throwIfNotFound: true);
         m_InGameActions_CameraSide = m_InGameActions.FindAction("CameraSide", throwIfNotFound: true);
+        m_InGameActions_Charge = m_InGameActions.FindAction("Charge", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -299,6 +319,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
     private readonly InputAction m_InGameActions_Shoot;
     private readonly InputAction m_InGameActions_Look;
     private readonly InputAction m_InGameActions_CameraSide;
+    private readonly InputAction m_InGameActions_Charge;
     public struct InGameActionsActions
     {
         private @PlayerControls m_Wrapper;
@@ -311,6 +332,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         public InputAction @Shoot => m_Wrapper.m_InGameActions_Shoot;
         public InputAction @Look => m_Wrapper.m_InGameActions_Look;
         public InputAction @CameraSide => m_Wrapper.m_InGameActions_CameraSide;
+        public InputAction @Charge => m_Wrapper.m_InGameActions_Charge;
         public InputActionMap Get() { return m_Wrapper.m_InGameActions; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -344,6 +366,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @CameraSide.started -= m_Wrapper.m_InGameActionsActionsCallbackInterface.OnCameraSide;
                 @CameraSide.performed -= m_Wrapper.m_InGameActionsActionsCallbackInterface.OnCameraSide;
                 @CameraSide.canceled -= m_Wrapper.m_InGameActionsActionsCallbackInterface.OnCameraSide;
+                @Charge.started -= m_Wrapper.m_InGameActionsActionsCallbackInterface.OnCharge;
+                @Charge.performed -= m_Wrapper.m_InGameActionsActionsCallbackInterface.OnCharge;
+                @Charge.canceled -= m_Wrapper.m_InGameActionsActionsCallbackInterface.OnCharge;
             }
             m_Wrapper.m_InGameActionsActionsCallbackInterface = instance;
             if (instance != null)
@@ -372,6 +397,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @CameraSide.started += instance.OnCameraSide;
                 @CameraSide.performed += instance.OnCameraSide;
                 @CameraSide.canceled += instance.OnCameraSide;
+                @Charge.started += instance.OnCharge;
+                @Charge.performed += instance.OnCharge;
+                @Charge.canceled += instance.OnCharge;
             }
         }
     }
@@ -386,5 +414,6 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         void OnShoot(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
         void OnCameraSide(InputAction.CallbackContext context);
+        void OnCharge(InputAction.CallbackContext context);
     }
 }

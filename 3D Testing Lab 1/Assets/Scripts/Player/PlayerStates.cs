@@ -151,9 +151,8 @@ public class Player_DodgeState : State
 	Quaternion targetRot;
 	Vector3 targetDirection;
 
-	float dodgeSpeed = 14f;
+	float dodgeSpeed = 18f;
 	float dodgeCount = 0.3f;
-	//float dodgeCancellable = 0.1f;
 	float dodgeCounter = 0f;
 
 	public Player_DodgeState(string name, StateMachine stateMachine) : base(name, stateMachine) { }
@@ -170,7 +169,7 @@ public class Player_DodgeState : State
 		SM.myInputs.ResetInput("Dodge");
 
 		SM.myAnimator.SetTrigger("Dodge");
-		//SM.myAnimator.Play("Dodge");
+		SM.FireSignal("ThrusterOn");
 	}
 
 	public override void UpdateState()
@@ -220,8 +219,9 @@ public class Player_DodgeState : State
 
 	public override void EndState()
 	{
-		SM.myStatus.SetCooldown("Dodge", 0.25f);
+		SM.myStatus.SetCooldown("Dodge", 0.5f);
 		SM.myAnimator.ResetTrigger("Dodge");
+		SM.FireSignal("ThrusterOff");
 	}
 }
 
@@ -334,7 +334,8 @@ public class Player_JumpState : State
 		if (jumpCounter > 0 && SM.myInputs.GetInput("JumpHold"))
 			currentMotion.y = jumpSpeed;
 
-		if (SM.myInputs.GetInput("Jump") && (Vector3.Angle(Vector3.up, SM.myStatus.hitNormal) > 80) && SM.myStatus.isTouchingWall) //Check if touching wall
+		if (SM.myInputs.GetInput("Jump") && (Vector3.Angle(Vector3.up, SM.myStatus.hitNormal) > 80) 
+			&& SM.myStatus.isTouchingWall && SM.myStatus.GetCooldown("Wall Jump")) //Check if touching wall
 			SM.SwitchState("WallJump");
 		else if (SM.myInputs.GetInput("Jump") && !SM.myStatus.GetCooldown("Coyote"))
 			SM.SwitchState("Jump");
@@ -520,7 +521,7 @@ public class Player_WallJumpState : State
 			else if (SM.myInputs.GetInput("Dodge"))
 			{
 				SM.SwitchState("Dodge");
-				SM.myStatus.SetCooldown("WallJump", 1f);
+				SM.myStatus.SetCooldown("WallJump", 2f);
 			}
 			else if (SM.myCController.isGrounded)
 			{
@@ -555,6 +556,5 @@ public class Player_WallJumpState : State
 
 	public override void EndState()
 	{
-		SM.myStatus.SetCooldown("WallJump", 0.1f);
 	}
 }

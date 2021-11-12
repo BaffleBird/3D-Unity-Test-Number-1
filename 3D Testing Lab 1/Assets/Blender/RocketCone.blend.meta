@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: fd82576b0cf3d304b8ccb5d366942a07
+guid: 87d229546f63c0b4790586381f51d2b3
 ModelImporter:
   serializedVersion: 20200
   internalIDToNameTable: []
@@ -34,7 +34,7 @@ ModelImporter:
     isReadable: 0
   meshes:
     lODScreenPercentages: []
-    globalScale: 20
+    globalScale: 1
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
@@ -72,17 +72,7 @@ ModelImporter:
     legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
-  referencedClips:
-  - c67b851da70731e41a8e43284a2afcd6
-  - 3dc30e7de1867034a92c795e44e2c0a9
-  - 9c37a20a595df9b49945188261e2d35c
-  - 5b215a3c662553b44ba66bb85a3d2c1a
-  - 17ce3d28a270e9b4596af2bbe3f04db3
-  - 6181d75989d1694498d35d2e41d81cd6
-  - 120b127eb4b0b7f4183a0c026cca71ca
-  - 633771ea14727554ab947ff64aa2d440
-  - 558fc148508cf2c40b062e4006f46975
-  - bb1728661ee471e4c952e314368a4c51
+  referencedClips: []
   importAnimation: 1
   humanDescription:
     serializedVersion: 3
@@ -95,7 +85,7 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
-    globalScale: 0.19999999
+    globalScale: 1
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0
