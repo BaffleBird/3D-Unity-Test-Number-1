@@ -21,6 +21,8 @@ public class ParticleLauncher : MonoBehaviour
     [Header("Laser Stuff")]
     [SerializeField] VisualEffect cannonOrb;
     [SerializeField] VisualEffect beam;
+    [SerializeField] VisualEffect smoke;
+    float impactTimer = 0;
 
     List<ParticleCollisionEvent> collisionEvents = new List<ParticleCollisionEvent>();
 
@@ -40,7 +42,7 @@ public class ParticleLauncher : MonoBehaviour
 
     void Update()
     {
-        timer -= Time.deltaTime;
+        timer -= timer <= 0 ? 0 : Time.deltaTime;
         if(fire)
 		{
             if (target)
@@ -58,6 +60,7 @@ public class ParticleLauncher : MonoBehaviour
             if(!cannonFired)
 			{
                 beam.Play();
+                impactTimer = 1.85f;
                 cannonFired = true;
             }
 		}
@@ -76,7 +79,44 @@ public class ParticleLauncher : MonoBehaviour
             if (strength < 0.05f)
                 cannonOrb.Stop();
         }
+
+        BeamImpact();
     }
+
+    bool smokeIsPlaying = false;
+    void BeamImpact()
+	{
+        if (impactTimer > 0)
+		{
+            LayerMask mask = LayerMask.GetMask("Terrain");
+            RaycastHit hit;
+            impactTimer -= Time.deltaTime;
+            if(Physics.Linecast(transform.position, target.position, out hit, mask))
+			{
+                smoke.transform.position = hit.point;
+                if (!smokeIsPlaying)
+				{
+                    smokeIsPlaying = true;
+                    smoke.Play();
+                }
+                   
+            }
+            else
+			{
+                if (smokeIsPlaying)
+                {
+                    smokeIsPlaying = false;
+                    smoke.Stop();
+                }
+            }
+        }
+        else if (smokeIsPlaying)
+        {
+            smokeIsPlaying = false;
+            smoke.Stop();
+        }
+        
+	}
 
     private void OnDisable()
     {

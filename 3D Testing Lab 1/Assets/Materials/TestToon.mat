@@ -10,6 +10,7 @@ Material:
   m_Name: TestToon
   m_Shader: {fileID: -6465566751694194690, guid: 561c04fe6a7a8954a88c0ab1cb895817, type: 3}
   m_ShaderKeywords: MAIN_LIGHT_CALCULATE_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _SHADOWS_SOFT
+    _EMISSION
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -92,14 +93,14 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - Vector1_0088efff5d854226a706e22430d40060: 0.2
-    - Vector1_17e15d5b965e4999a3a27968c91f9e6f: 0
-    - Vector1_283dcba595244933a8647465e9df530e: 1.92
-    - Vector1_4b0deaefa44248dd8fcf1f13ff25b529: 20
-    - Vector1_70c15e4f876e4f76833b17790f7e6c6e: 0.27
-    - Vector1_938261d72e6f40f186531e9c65aa7d28: 0.1
-    - Vector1_c132e1944252438ea02f94f0a5a888ed: 0.1
-    - Vector1_f54114a9c3664a3f8fc61a59d596f3ae: 1.8
+    - Vector1_0088efff5d854226a706e22430d40060: 0.17
+    - Vector1_17e15d5b965e4999a3a27968c91f9e6f: 2.4
+    - Vector1_283dcba595244933a8647465e9df530e: 2.87
+    - Vector1_4b0deaefa44248dd8fcf1f13ff25b529: 7.4
+    - Vector1_70c15e4f876e4f76833b17790f7e6c6e: 0.1
+    - Vector1_938261d72e6f40f186531e9c65aa7d28: 0.02
+    - Vector1_c132e1944252438ea02f94f0a5a888ed: 0.05
+    - Vector1_f54114a9c3664a3f8fc61a59d596f3ae: 1
     - _AlphaClip: 0
     - _Blend: 0
     - _BumpScale: 1
@@ -128,7 +129,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - Color_092f8d0e500445909074c57093921a6a: {r: 0.5568628, g: 0.5568628, b: 0.5568628, a: 0}
-    - Color_9cd6b690729e43d49b57145b3f93f5e6: {r: 0.5566038, g: 0.5566038, b: 0.5566038, a: 0}
+    - Color_9cd6b690729e43d49b57145b3f93f5e6: {r: 0.1981132, g: 0.1981132, b: 0.1981132, a: 0}
     - Color_ebe683655378434f9dbb5e0e4fc22ef6: {r: 1, g: 1, b: 1, a: 0}
     - Vector2_27377fbf207c4a7590c6c00bb7a959a7: {r: 34.3, g: 20, b: -21.5, a: 1}
     - Vector2_c4492394a00d4e8087631fbb06a33f6a: {r: 0, g: 0, b: 0, a: 0}

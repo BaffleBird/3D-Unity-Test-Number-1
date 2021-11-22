@@ -199,7 +199,7 @@ public class PlayerUpper_ShootState : State
 		}
 
 		if (!SM.myInputs.GetInput("Shoot") || SM.myStatus.currentState == "Dodge" || SM.myStatus.currentState == "Sprint")
-			SM.SwitchState("StandyBy");
+			SM.SwitchState("StandyBy"); SM.FireSignal("CeaseFire");
 	}
 
 	public override Vector3 MotionUpdate()
@@ -362,7 +362,9 @@ public class PlayerUpper_CannonState : State
 		}
 
 		if (fireTime <= 0 || SM.myStatus.currentState == "Dodge" || SM.myStatus.currentState == "Sprint")
+		{
 			SM.SwitchState("StandyBy");
+		}
 	}
 
 	public override Vector3 MotionUpdate()

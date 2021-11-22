@@ -23,6 +23,7 @@ Material:
   m_Name: TestToonRBot
   m_Shader: {fileID: -6465566751694194690, guid: 2d47eb0017625bb4aacdcae6f27fb309, type: 3}
   m_ShaderKeywords: MAIN_LIGHT_CALCULATE_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _SHADOWS_SOFT
+    _EMISSION
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -107,10 +108,10 @@ Material:
     m_Floats:
     - Vector1_0088efff5d854226a706e22430d40060: 0.16
     - Vector1_17e15d5b965e4999a3a27968c91f9e6f: 256
-    - Vector1_70c15e4f876e4f76833b17790f7e6c6e: 0.2
+    - Vector1_70c15e4f876e4f76833b17790f7e6c6e: 0.1
     - Vector1_938261d72e6f40f186531e9c65aa7d28: 0.1
     - Vector1_c132e1944252438ea02f94f0a5a888ed: 0.13
-    - Vector1_f54114a9c3664a3f8fc61a59d596f3ae: 2
+    - Vector1_f54114a9c3664a3f8fc61a59d596f3ae: 1.5
     - _AlphaClip: 0
     - _Blend: 0
     - _BumpScale: 1

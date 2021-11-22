@@ -191,8 +191,6 @@ public class Player_DodgeState : State
 			else if (currentMotion.sqrMagnitude != 0 && SM.myCController.isGrounded)
 				SM.SwitchState("Idle");
 		}
-		
-
 	}
 
 	public override Vector3 MotionUpdate()
@@ -553,7 +551,6 @@ public class Player_WallJumpState : State
 		}
 		
 	}
-
 	public override void EndState()
 	{
 	}
