@@ -24,6 +24,11 @@ public class Player_IdleState : State
 
 	public override void UpdateState()
 	{
+		Transition();
+	}
+
+	public override void Transition()
+	{
 		if (!SM.myStatus.isStableGround && SM.myCController.isGrounded)
 			SM.SwitchState("Slide");
 		else if (SM.myInputs.GetInput("Jump") && SM.myCController.isGrounded)
@@ -38,8 +43,8 @@ public class Player_IdleState : State
 
 	public override Vector3 MotionUpdate()
 	{
-		currentMotion.x = Mathf.SmoothDamp(currentMotion.x, 0, ref xVelocity, 0.2f);
-		currentMotion.z = Mathf.SmoothDamp(currentMotion.z, 0, ref yVelocity, 0.2f);
+		currentMotion.x = Mathf.SmoothDamp(currentMotion.x, 0, ref xVelocity, 0.3f);
+		currentMotion.z = Mathf.SmoothDamp(currentMotion.z, 0, ref yVelocity, 0.3f);
 		currentMotion.y = -SM.myStatus.Gravity;
 		return currentMotion;
 	}
@@ -78,6 +83,11 @@ public class Player_MoveState : State
 	{
 		//TextUpdate.Instance.SetText("Slope %", SM.StabilityPercentage().ToString());
 
+		Transition();
+	}
+
+	public override void Transition()
+	{
 		if (!SM.myStatus.isStableGround && SM.myCController.isGrounded)
 			SM.SwitchState("Slide");
 		else if (SM.myInputs.GetInput("Jump") || !SM.myCController.isGrounded)
@@ -143,15 +153,20 @@ public class Player_MoveState : State
 
 public class Player_DodgeState : State
 {
+	//Set a boost direction according to frame 1 inputs
+
+	//While updating
+	//Lerp the boost direction to the input direction
+
 	Vector3 currentMotion;
-	Vector3 velocityRef;
 
 	float refGravity;
 
 	Quaternion targetRot;
 	Vector3 targetDirection;
 
-	float dodgeSpeed = 18f;
+	float dodgeMax = 20f;
+	float dodgeSpeed = 10f;
 	float dodgeCount = 0.3f;
 	float dodgeCounter = 0f;
 
@@ -159,6 +174,10 @@ public class Player_DodgeState : State
 
 	public override void StartState()
 	{
+		dodgeSpeed = 10f;
+		if (SM.myStatus.currentMovement.sqrMagnitude < dodgeSpeed * dodgeSpeed)
+			dodgeSpeed = Vector3.Dot(SM.myStatus.currentMovement, targetDirection.normalized * dodgeSpeed);
+
 		if (SM.myInputs.MoveInput != Vector2.zero)
 			targetDirection = MathHelper.CameraAdjustedVector(Camera.main, SM.myInputs.MoveInput);
 		else
@@ -176,19 +195,28 @@ public class Player_DodgeState : State
 	{
 		if (dodgeCounter > 0) dodgeCounter -= Time.deltaTime;
 
+		if (SM.myInputs.MoveInput != Vector2.zero)
+			targetDirection = MathHelper.CameraAdjustedVector(Camera.main, SM.myInputs.MoveInput);
+		else
+			targetDirection = SM.myModel.transform.forward;
+		currentMotion = Vector3.Lerp(currentMotion, targetDirection, 0.25f).normalized * dodgeSpeed;
+
+		Transition();
+	}
+
+	public override void Transition()
+	{
 		if (!SM.myStatus.isStableGround && SM.myCController.isGrounded)
 			SM.SwitchState("Slide");
 		else if (SM.myInputs.GetInput("Jump") && SM.myCController.isGrounded)
 			SM.SwitchState("Jump");
-		else if (dodgeCounter <= 0)
+		else if (dodgeCounter <= 0 && !SM.myInputs.GetInput("DodgeHold"))
 		{
-			if (SM.myCController.isGrounded && SM.myInputs.MoveInput != Vector2.zero && SM.myInputs.GetInput("DodgeHold"))
+			if (SM.myCController.isGrounded && SM.myInputs.MoveInput != Vector2.zero)
 				SM.SwitchState("Sprint");
 			else if (!SM.myCController.isGrounded)
 				SM.SwitchState("Jump");
-			else if (SM.myCController.isGrounded && SM.myInputs.MoveInput != Vector2.zero)
-				SM.SwitchState("Move");
-			else if (currentMotion.sqrMagnitude != 0 && SM.myCController.isGrounded)
+			else if (SM.myCController.isGrounded && SM.myInputs.MoveInput == Vector2.zero)
 				SM.SwitchState("Idle");
 		}
 	}
@@ -196,9 +224,7 @@ public class Player_DodgeState : State
 	public override Vector3 MotionUpdate()
 	{
 		if (dodgeCounter > 0)
-			currentMotion = Vector3.SmoothDamp(currentMotion, targetDirection * dodgeSpeed, ref velocityRef, 0.3f);
-		else
-			currentMotion = Vector3.SmoothDamp(currentMotion, Vector3.zero, ref velocityRef, 0.16f);
+			dodgeSpeed = Mathf.Lerp(dodgeSpeed, dodgeMax, 0.1f);
 
 		if (!SM.myCController.isGrounded)
 			currentMotion.y = Mathf.SmoothDamp(currentMotion.y, -SM.myStatus.Gravity, ref refGravity, 1f);
@@ -210,7 +236,7 @@ public class Player_DodgeState : State
 	{
 		if (MathHelper.ZeroVectorY(currentMotion) != Vector3.zero)
 		{
-			targetRot = Quaternion.Lerp(SM.myModel.transform.rotation, Quaternion.LookRotation(MathHelper.ZeroVectorY(currentMotion).normalized), 0.3f);
+			targetRot = Quaternion.Lerp(SM.myModel.transform.rotation, Quaternion.LookRotation(MathHelper.ZeroVectorY(targetDirection).normalized), 0.1f);
 			SM.myInputs.transform.rotation = targetRot;
 		}
 	}
@@ -246,11 +272,18 @@ public class Player_SprintState : State
 
 	public override void UpdateState()
 	{
+		Transition();
+	}
+
+	public override void Transition()
+	{
 		if (!SM.myStatus.isStableGround && SM.myCController.isGrounded)
 			SM.SwitchState("Slide");
 		else if (SM.myInputs.GetInput("Jump") || !SM.myCController.isGrounded)
 			SM.SwitchState("Jump");
-		else if (SM.myInputs.MoveInput != Vector2.zero && (!SM.myInputs.GetInput("DodgeHold") || SM.myInputs.GetInput("Shoot")))
+		else if (SM.myInputs.GetInput("Dodge"))
+			SM.SwitchState("Dodge");
+		else if (SM.myInputs.GetInput("Shoot"))
 			SM.SwitchState("Move");
 		else if (SM.myInputs.MoveInput == Vector2.zero)
 			SM.SwitchState("Idle");
@@ -332,7 +365,12 @@ public class Player_JumpState : State
 		if (jumpCounter > 0 && SM.myInputs.GetInput("JumpHold"))
 			currentMotion.y = jumpSpeed;
 
-		if (SM.myInputs.GetInput("Jump") && (Vector3.Angle(Vector3.up, SM.myStatus.hitNormal) > 80) 
+		Transition();
+	}
+
+	public override void Transition()
+	{
+		if (SM.myInputs.GetInput("Jump") && (Vector3.Angle(Vector3.up, SM.myStatus.hitNormal) > 80)
 			&& SM.myStatus.isTouchingWall && SM.myStatus.GetCooldown("Wall Jump")) //Check if touching wall
 			SM.SwitchState("WallJump");
 		else if (SM.myInputs.GetInput("Jump") && !SM.myStatus.GetCooldown("Coyote"))
@@ -343,14 +381,13 @@ public class Player_JumpState : State
 		{
 			if (!SM.myStatus.isStableGround)
 				SM.SwitchState("Slide");
-			else if (SM.myInputs.MoveInput != Vector2.zero && currentMotion.y <= 0 && SM.myInputs.GetInput("DodgeHold"))
+			else if (SM.myInputs.MoveInput != Vector2.zero && currentMotion.y <= 0 && (SM.previousState == "Sprint" || SM.previousState == "Dodge"))
 				SM.SwitchState("Sprint");
 			else if (SM.myInputs.MoveInput != Vector2.zero && currentMotion.y <= 0)
 				SM.SwitchState("Move");
 			else if (currentMotion.y <= 0)
 				SM.SwitchState("Idle");
 		}
-		
 	}
 
 	public override Vector3 MotionUpdate()
@@ -406,6 +443,11 @@ public class Player_SlideState : State
 		if (slideCounter > 0)
 			slideCounter -= Time.deltaTime;
 
+		Transition();
+	}
+
+	public override void Transition()
+	{
 		if (!SM.myCController.isGrounded)
 			SM.SwitchState("Jump");
 		else if (SM.myInputs.GetInput("Jump"))
@@ -473,10 +515,11 @@ public class Player_WallJumpState : State
 	public override void StartState()
 	{
 		//Record Trajectory - Determine Vector of direction of approach
-		if (SM.myInputs.MoveInput != Vector2.zero)
-			targetDirection = MathHelper.CameraAdjustedVector(Camera.main, SM.myInputs.MoveInput);
-		else
-			targetDirection = SM.myModel.transform.forward;
+		//if (SM.myInputs.MoveInput != Vector2.zero)
+			//targetDirection = MathHelper.CameraAdjustedVector(Camera.main, SM.myInputs.MoveInput);
+		//else
+			//targetDirection = SM.myModel.transform.forward;
+		targetDirection = SM.myStatus.currentMovement.normalized;
 
 		JumpTrajectory = Vector3.zero;
 		JumpTrajectory = Vector3.Reflect(targetDirection * moveSpeed, SM.myStatus.hitNormal);
@@ -503,7 +546,8 @@ public class Player_WallJumpState : State
 
 		if (animationHold > 0)
 			animationHold -= Time.deltaTime;
-		else if (launched == false)
+
+		if (animationHold <= 0 && launched == false)
 		{
 			currentMotion = JumpTrajectory;
 			launched = true;
@@ -511,27 +555,33 @@ public class Player_WallJumpState : State
 		}
 		else
 		{
-			if (SM.myInputs.GetInput("Jump") && (Vector3.Angle(Vector3.up, SM.myStatus.hitNormal) > 80) && SM.myStatus.isTouchingWall) //Check if touching wall
-			{
-				SM.SwitchState("WallJump");
-				SM.myStatus.SetCooldown("WallJump", 0.3f);
-			}
-			else if (SM.myInputs.GetInput("Dodge"))
-			{
-				SM.SwitchState("Dodge");
-				SM.myStatus.SetCooldown("WallJump", 2f);
-			}
-			else if (SM.myCController.isGrounded)
-			{
-				if (!SM.myStatus.isStableGround)
-					SM.SwitchState("Slide");
-				else if (SM.myInputs.MoveInput != Vector2.zero && currentMotion.y <= 0 && SM.myInputs.GetInput("DodgeHold"))
-					SM.SwitchState("Sprint");
-				else if (SM.myInputs.MoveInput != Vector2.zero && currentMotion.y <= 0)
-					SM.SwitchState("Move");
-				else if (currentMotion.y <= 0)
-					SM.SwitchState("Idle");
-			}
+			Transition();
+		}
+	}
+
+	public override void Transition()
+	{
+		//Check if touching wall, and that wall is pretty upright, and walljump is off cooldown
+		if (SM.myInputs.GetInput("Jump") && (Vector3.Angle(Vector3.up, SM.myStatus.hitNormal) > 80) && SM.myStatus.isTouchingWall && SM.myStatus.GetCooldown("Wall Jump")) 
+		{
+			SM.SwitchState("WallJump");
+			SM.myStatus.SetCooldown("WallJump", 0.3f);
+		}
+		else if (SM.myInputs.GetInput("Dodge"))
+		{
+			SM.SwitchState("Dodge");
+			SM.myStatus.SetCooldown("WallJump", 2f);
+		}
+		else if (SM.myCController.isGrounded)
+		{
+			if (!SM.myStatus.isStableGround)
+				SM.SwitchState("Slide");
+			else if (SM.myInputs.MoveInput != Vector2.zero && currentMotion.y <= 0 && SM.myInputs.GetInput("DodgeHold"))
+				SM.SwitchState("Sprint");
+			else if (SM.myInputs.MoveInput != Vector2.zero && currentMotion.y <= 0)
+				SM.SwitchState("Move");
+			else if (currentMotion.y <= 0)
+				SM.SwitchState("Idle");
 		}
 	}
 

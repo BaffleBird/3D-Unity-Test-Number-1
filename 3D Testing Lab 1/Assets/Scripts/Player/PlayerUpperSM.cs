@@ -76,7 +76,6 @@ public class PlayerUpper_StandyByState : State
 
 	public override void UpdateState()
 	{
-
 		USM.aimTarget.transform.position = Vector3.Lerp(USM.aimTarget.transform.position, targetPoint, Time.deltaTime * targetSpeed);
 		if (USM.animationRig.weight > 0)
 		{
@@ -88,6 +87,11 @@ public class PlayerUpper_StandyByState : State
 			}
 		}
 
+		Transition();
+	}
+
+	public override void Transition()
+	{
 		if (SM.myStatus.currentState != "Dodge" && SM.myStatus.currentState != "Sprint")
 		{
 			if (SM.myInputs.GetInput("Shoot") && SM.myStatus.GetCooldown("Laser"))
@@ -95,8 +99,6 @@ public class PlayerUpper_StandyByState : State
 			else if (SM.myInputs.GetInput("Charge") && SM.myStatus.GetCooldown("Laser"))
 				SM.SwitchState("Charge");
 		}
-		
-		
 	}
 
 	public override Vector3 MotionUpdate()
@@ -198,6 +200,11 @@ public class PlayerUpper_ShootState : State
 			USM.bodyAimTarget.transform.position = Vector3.Lerp(USM.bodyAimTarget.transform.position, SM.transform.position + cappedVector, Time.deltaTime * targetSpeed);
 		}
 
+		Transition();
+	}
+
+	public override void Transition()
+	{
 		if (!SM.myInputs.GetInput("Shoot") || SM.myStatus.currentState == "Dodge" || SM.myStatus.currentState == "Sprint")
 			SM.SwitchState("StandyBy"); SM.FireSignal("CeaseFire");
 	}
@@ -246,6 +253,11 @@ public class PlayerUpper_ChargeState : State
 			}
 		}
 
+		Transition();
+	}
+
+	public override void Transition()
+	{
 		if (SM.myInputs.GetInput("Shoot"))
 			SM.SwitchState("Cannon");
 		else if (!SM.myInputs.GetInput("Charge"))
@@ -331,7 +343,6 @@ public class PlayerUpper_CannonState : State
 		{
 			USM.FireSignal("Release");
 		}
-			
 
 		//Adjust Body target to match
 		//You can get the direction of the target (targetAngle), and which side you're turned to (targetAngleDir)
@@ -361,6 +372,11 @@ public class PlayerUpper_CannonState : State
 			USM.bodyAimTarget.transform.position = Vector3.Lerp(USM.bodyAimTarget.transform.position, SM.transform.position + cappedVector, Time.deltaTime * targetSpeed);
 		}
 
+		Transition();
+	}
+
+	public override void Transition()
+	{
 		if (fireTime <= 0 || SM.myStatus.currentState == "Dodge" || SM.myStatus.currentState == "Sprint")
 		{
 			SM.SwitchState("StandyBy");

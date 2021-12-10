@@ -31,6 +31,7 @@ public class PlayerSM : StateMachine
 		myAnimator.SetFloat("x_motion", myStatus.currentMovement.x);
 
 		TextUpdate.Instance.SetText("Player State", currentState.StateName);
+		TextUpdate.Instance.SetText("Previous State", previousState);
 	}
 
 	protected override void FixedUpdate()

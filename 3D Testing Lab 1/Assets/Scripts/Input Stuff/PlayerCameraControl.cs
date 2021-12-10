@@ -20,6 +20,7 @@ public class PlayerCameraControl : MonoBehaviour
 
 	[Header("Look Controls")]
 	[SerializeField] float sensitivity = 0.5f;
+	[SerializeField] float sensitivityModifier = 1;
 	[SerializeField] float snappiness = 10f;
 	[SerializeField] float upperAngle = 40;
 	[SerializeField] float lowerAngle = 340;
@@ -83,10 +84,10 @@ public class PlayerCameraControl : MonoBehaviour
 		//TextUpdate.Instance.SetText("Mouse Input", playerInput.PointerInput.ToString());
 
 		// Horizontal Camera Rotation Input
-		xVelocity = Mathf.Lerp(xVelocity, playerInput.PointerInput.x * sensitivity, snappiness * Time.fixedDeltaTime);
+		xVelocity = Mathf.Lerp(xVelocity, playerInput.PointerInput.x * sensitivity * sensitivityModifier, snappiness * Time.fixedDeltaTime);
 
 		// Vertical Camera Rotation Input
-		yVelocity = Mathf.Lerp(yVelocity, -playerInput.PointerInput.y * sensitivity, snappiness * Time.fixedDeltaTime);
+		yVelocity = Mathf.Lerp(yVelocity, -playerInput.PointerInput.y * sensitivity * sensitivityModifier, snappiness * Time.fixedDeltaTime);
 
 		transform.Rotate(yVelocity, xVelocity, 0);
 

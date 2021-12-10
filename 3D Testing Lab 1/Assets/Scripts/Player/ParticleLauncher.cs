@@ -99,7 +99,6 @@ public class ParticleLauncher : MonoBehaviour
                     smokeIsPlaying = true;
                     smoke.Play();
                 }
-                   
             }
             else
 			{

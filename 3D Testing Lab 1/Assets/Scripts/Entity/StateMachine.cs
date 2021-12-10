@@ -118,6 +118,7 @@ public abstract class State
 	public abstract void UpdateState();
 	public virtual void FixedUpdateState() { }
 	public virtual void LateUpdateState() { }
+	public abstract void Transition();
 	public abstract Vector3 MotionUpdate();
 	public abstract void EndState();
 }

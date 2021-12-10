@@ -7,36 +7,29 @@ public class ParticleBoosterController : MonoBehaviour
 {
     [SerializeField] StateMachine CoreStateMachine;
 
+    [Header("Effect Components")]
     [SerializeField] Light boosterLight;
-    [SerializeField] GameObject[] thrusters;
-    List<ParticleSystem> particleSystems = new List<ParticleSystem>();
+    [SerializeField] VisualEffect[] thrusters;
     [SerializeField] VisualEffect rocketFlare;
+    [SerializeField] VisualEffect terrainTrail;
 
-    private float outputLevel = 0f;
+    [Header("Intensity Controls")]
     [SerializeField] float lightMaxIntensity = 0.64f;
-    [SerializeField] float sizeMax = 0.25f;
-    [SerializeField] float speedMax = 1.2f;
     [Range(0,1)][SerializeField] float ignitionSpeed = 0.25f, decaySpeed = 0.1f;
+    private float outputLevel = 0f;
 
     bool thrusterON = false;
+    LayerMask dustMask;
+    Color waterDustColor = new Color(0.86f, 0.87f, 0.89f, 1);
+    Color terrainDustColor = new Color(0.46f, 0.27f, 0.19f, 1);
+
 
     // Start is called before the first frame update
     void Start()
     {
+        dustMask = LayerMask.GetMask("Terrain");
+        dustMask |= (1 << LayerMask.NameToLayer("Water"));
         boosterLight.intensity = 0;
-
-        for (int i = 0; i < thrusters.Length; i++)
-        {
-            particleSystems.Add(thrusters[i].GetComponent<ParticleSystem>());
-        }
-
-        for (int i = 0; i < particleSystems.Count; i++)
-		{
-            var main = particleSystems[i].main;
-            main.startSize = 0;
-            main.startSpeed = 0.2f;
-        }
-
         CoreStateMachine.TestSignalEvent += OnStateMachineSignal;
     }
 
@@ -51,23 +44,35 @@ public class ParticleBoosterController : MonoBehaviour
 			{
                 rocketFlare.Play();
                 rocketBurst = true;
-			}
+                for (int i = 0; i < thrusters.Length; i++)
+                    thrusters[i].Play();
+            }
+
+            RaycastHit hit;
+            if (Physics.Raycast(transform.position, Vector3.down, out hit, 6, dustMask))
+			{
+                terrainTrail.Play();
+                terrainTrail.SetVector3("WorldPosition", hit.point);
+
+                TextUpdate.Instance.SetText("Trail", LayerMask.LayerToName(hit.transform.gameObject.layer));
+
+                if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Water"))
+                    terrainTrail.SetVector4("DustColor", waterDustColor);
+                else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Terrain"))
+                    terrainTrail.SetVector4("DustColor", terrainDustColor);
+            }
         }
         else
 		{
             outputLevel = Mathf.Lerp(outputLevel, 0, decaySpeed);
             rocketBurst = false;
+            for (int i = 0; i < thrusters.Length; i++)
+                thrusters[i].Stop();
         }   
     }
 	private void LateUpdate()
 	{
         boosterLight.intensity = outputLevel * lightMaxIntensity;
-        for (int i = 0; i < particleSystems.Count; i++)
-        {
-            var main = particleSystems[i].main;
-            main.startSize = sizeMax * outputLevel;
-            main.startSpeed = speedMax * outputLevel;
-        }
     }
 
 	private void OnDisable()
