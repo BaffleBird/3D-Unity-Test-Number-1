@@ -18,3 +18,4 @@ Credits
 ------------------------------
  - "Rusty Iron Beam" (https://skfb.ly/6TOSw) by Thunder is licensed under Creative Commons Attribution-ShareAlike (http://creativecommons.org/licenses/by-sa/4.0/).
  - Grass Tools and Shaders by Minions Art (https://www.patreon.com/posts/urp-compute-54164790)
+ - Fantasy Skybox Free Version by Render Knight (https://assetstore.unity.com/packages/2d/textures-materials/sky/fantasy-skybox-free-18353)
