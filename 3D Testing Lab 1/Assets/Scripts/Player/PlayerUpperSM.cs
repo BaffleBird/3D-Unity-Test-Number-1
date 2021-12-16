@@ -39,6 +39,10 @@ public class PlayerUpperSM : StateMachine
 
 		currentState = States["StandyBy"];
 		_previousState = currentState.StateName;
+	}
+
+	private void Start()
+	{
 		currentState.StartState();
 	}
 
@@ -72,6 +76,7 @@ public class PlayerUpper_StandyByState : State
 	public override void StartState()
 	{
 		targetPoint = SM.transform.position + (SM.transform.forward * 2f);
+		USM.FireSignal("ShiftCamera");
 	}
 
 	public override void UpdateState()
@@ -92,13 +97,10 @@ public class PlayerUpper_StandyByState : State
 
 	public override void Transition()
 	{
-		if (SM.myStatus.currentState != "Dodge" && SM.myStatus.currentState != "Sprint")
-		{
-			if (SM.myInputs.GetInput("Shoot") && SM.myStatus.GetCooldown("Laser"))
-				SM.SwitchState("Shoot");
-			else if (SM.myInputs.GetInput("Charge") && SM.myStatus.GetCooldown("Laser"))
-				SM.SwitchState("Charge");
-		}
+		if (SM.myInputs.GetInput("Shoot") && SM.myStatus.GetCooldown("Laser"))
+			SM.SwitchState("Shoot");
+		else if (SM.myInputs.GetInput("Charge") && SM.myStatus.GetCooldown("Laser"))
+			SM.SwitchState("Charge");
 	}
 
 	public override Vector3 MotionUpdate()
@@ -138,6 +140,8 @@ public class PlayerUpper_ShootState : State
 		SM.myAnimator.SetBool("Shoot", true);
 		USM.gunAnimator.SetBool("Shooting", true);
 		targetPoint = SM.transform.position + (SM.transform.forward * 2f);
+
+		USM.FireSignal("ShiftCamera");
 	}
 
 	public override void UpdateState()
@@ -205,7 +209,7 @@ public class PlayerUpper_ShootState : State
 
 	public override void Transition()
 	{
-		if (!SM.myInputs.GetInput("Shoot") || SM.myStatus.currentState == "Dodge" || SM.myStatus.currentState == "Sprint")
+		if (!SM.myInputs.GetInput("Shoot"))
 			SM.SwitchState("StandyBy"); SM.FireSignal("CeaseFire");
 	}
 
@@ -237,6 +241,7 @@ public class PlayerUpper_ChargeState : State
 	{
 		targetPoint = SM.transform.position + (SM.transform.forward * 2f);
 		USM.FireSignal("Charge");
+		USM.FireSignal("ShiftCamera");
 		USM.gunAnimator.SetBool("Shooting", true);
 	}
 
@@ -309,6 +314,8 @@ public class PlayerUpper_CannonState : State
 
 		//Firing Timer
 		fireTime = 2;
+
+		USM.FireSignal("ShiftCamera");
 	}
 
 	public override void UpdateState()
@@ -377,7 +384,7 @@ public class PlayerUpper_CannonState : State
 
 	public override void Transition()
 	{
-		if (fireTime <= 0 || SM.myStatus.currentState == "Dodge" || SM.myStatus.currentState == "Sprint")
+		if (fireTime <= 0)
 		{
 			SM.SwitchState("StandyBy");
 		}

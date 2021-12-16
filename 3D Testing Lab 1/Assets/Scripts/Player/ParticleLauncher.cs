@@ -83,7 +83,6 @@ public class ParticleLauncher : MonoBehaviour
         BeamImpact();
     }
 
-    bool smokeIsPlaying = false;
     void BeamImpact()
 	{
         if (impactTimer > 0)
@@ -94,26 +93,13 @@ public class ParticleLauncher : MonoBehaviour
             if(Physics.Linecast(transform.position, target.position, out hit, mask))
 			{
                 smoke.transform.position = hit.point;
-                if (!smokeIsPlaying)
-				{
-                    smokeIsPlaying = true;
-                    smoke.Play();
-                }
+                smoke.Play();
             }
             else
-			{
-                if (smokeIsPlaying)
-                {
-                    smokeIsPlaying = false;
-                    smoke.Stop();
-                }
-            }
+                smoke.Stop();
         }
-        else if (smokeIsPlaying)
-        {
-            smokeIsPlaying = false;
+        else
             smoke.Stop();
-        }
         
 	}
 

@@ -338,12 +338,12 @@ public class Player_JumpState : State
 			currentMotion = targetDirection.normalized * moveSpeed;
 			currentMotion.y = jumpSpeed;
 		}
-		else if (SM.myCController.isGrounded || !SM.myStatus.GetCooldown("Coyote"))
+		else if (SM.myCController.isGrounded || !SM.myStatus.GetCooldown("Coyote")) //If on the ground or the Coyote timer is active, allow a jump
 		{
 			targetDirection = MathHelper.CameraAdjustedVector(Camera.main, SM.myInputs.MoveInput);
 			currentMotion = targetDirection.normalized * moveSpeed;
 			currentMotion.y = jumpSpeed;
-			jumpCounter = 0.25f;
+			jumpCounter = 0.3f;
 			SM.myStatus.SetCooldown("Coyote", 0f);
 		}
 		else

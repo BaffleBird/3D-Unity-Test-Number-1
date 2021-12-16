@@ -20,10 +20,10 @@ public class PlayerCameraControl : MonoBehaviour
 
 	[Header("Look Controls")]
 	[SerializeField] float sensitivity = 0.5f;
-	[SerializeField] float sensitivityModifier = 1;
 	[SerializeField] float snappiness = 10f;
 	[SerializeField] float upperAngle = 40;
 	[SerializeField] float lowerAngle = 340;
+	float sensitivityModifier = 1;
 
 	float xVelocity;
 	float yVelocity;
@@ -47,26 +47,17 @@ public class PlayerCameraControl : MonoBehaviour
 		zoomSideOffset = CM_AimCameraOffset.m_Offset.x;
 	}
 
+	private void OnEnable()
+	{
+		//Subscribe to the Statemachine's signals
+		playerUpperSM.TestSignalEvent += SwitchCamera;
+	}
+
 	private void Update()
 	{
-		if ((playerUpperSM.currentStateName == "Shoot" || playerUpperSM.currentStateName == "Cannon")
-			&& !aimCamera.activeInHierarchy 
-			&& playerMainSM.currentStateName != "Dodge" && playerMainSM.currentStateName != "Sprint")
-		{
-			moveCamera.SetActive(false);
-			aimCamera.SetActive(true);
-		}
-		else if ((playerUpperSM.currentStateName != "Shoot" && playerUpperSM.currentStateName != "Cannon")
-			&& !moveCamera.activeInHierarchy
-			|| (playerMainSM.currentStateName == "Dodge" || playerMainSM.currentStateName == "Sprint"))
-		{
-			moveCamera.SetActive(true);
-			aimCamera.SetActive(false);
-		}
-
 		if (aimCamera.activeSelf && playerInput.GetInput("CameraSide"))
 		{
-			zoomSideOffset = zoomSideOffset > 0? -1 : 1;
+			zoomSideOffset = zoomSideOffset > 0 ? -1 : 1;
 			playerInput.ResetInput("CameraSide");
 		}
 	}
@@ -77,6 +68,33 @@ public class PlayerCameraControl : MonoBehaviour
 		UpdateLook();
 		UpdateZoom();
 		playerInput.ResetPointerInput();
+	}
+
+	private void OnDisable()
+	{
+		playerUpperSM.TestSignalEvent -= SwitchCamera;
+	}
+
+	private void SwitchCamera(string signalID)
+	{
+		if (signalID != "ShiftCamera")
+			return;
+
+		if ((playerUpperSM.currentStateName == "Shoot" || playerUpperSM.currentStateName == "Cannon")
+			&& !aimCamera.activeInHierarchy)
+		{
+			moveCamera.SetActive(false);
+			aimCamera.SetActive(true);
+			if (playerUpperSM.currentStateName == "Cannon")
+				sensitivityModifier = 0.5f;
+		}
+		else if ((playerUpperSM.currentStateName != "Shoot" && playerUpperSM.currentStateName != "Cannon")
+			&& !moveCamera.activeInHierarchy)
+		{
+			moveCamera.SetActive(true);
+			aimCamera.SetActive(false);
+			sensitivityModifier = 1;
+		}
 	}
 
 	public void UpdateLook()

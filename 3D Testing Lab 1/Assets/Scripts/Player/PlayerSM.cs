@@ -18,6 +18,10 @@ public class PlayerSM : StateMachine
 
 		currentState = States["Idle"];
 		_previousState = currentState.StateName;
+	}
+
+	private void Start()
+	{
 		currentState.StartState();
 	}
 
