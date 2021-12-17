@@ -2,7 +2,7 @@
 3D Mechanical and Visual Test in Unity (URP).
 This is a little prototype where I've been exploring some of Unity's features in 3D Space.
 Stuff I've done so far:
-- Modeled, riged, and UV'd a simple robot in Blender.
+- Modeled, rigged, and UV'd a simple robot in Blender.
 - Animated Robot using imported animations from Mixamo.
 - Set up a duo state machine system to make use of Inverse Kinematics (Animation Rigging package) in conjunction with base animations.
 - Implemented Movement, Jumping, Dashing, Sprinting, and Wall-Jumps
