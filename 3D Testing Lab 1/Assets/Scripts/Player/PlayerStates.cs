@@ -8,8 +8,6 @@ public class Player_IdleState : State
 	float xVelocity;
 	float yVelocity;
 
-	float refGravity;
-
 	public Player_IdleState(string name, StateMachine stateMachine) : base(name, stateMachine) { }
 
 	public override void StartState()
