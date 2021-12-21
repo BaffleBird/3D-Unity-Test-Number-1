@@ -34,7 +34,11 @@ public class Enemy_IdleState : Enemy_State
 
 	public override void Transition()
 	{
-		
+		if (SM.myInputs.GetInput("Move"))
+		{
+			SM.SwitchState("Move");
+		}
+			
 	}
 
 	public override Vector3 MotionUpdate()
@@ -53,33 +57,33 @@ public class Enemy_IdleState : Enemy_State
 public class Enemy_MoveState : Enemy_State
 {
 	float moveSpeed = 6f;
+	float turnSpeed = 6f;
 	float moveTimer = 0f;
 
 	Vector3 currentMotion;
-
 	Vector3 targetDirection;
+	Quaternion targetRotation;
 
 	public Enemy_MoveState(string name, EnemyStateMachine statemachine) : base(name, statemachine) { }
 
 	public override void StartState()
 	{
-		float randomVal = Random.value;
-		if(randomVal > 0.5)
-		{
-
-		}
-		else
-		{
-
-		}
-
 		currentMotion = SM.myStatus.currentMovement;
 		currentMotion.y = 0;
 		moveTimer = 5f;
+
+		//Have an target point that lerps towards the player position.
+		//Then Rotate Transform to face that target point
+			//Do this later
 	}
 
 	public override void UpdateState()
 	{
+		moveTimer -= Time.deltaTime;
+		//Rotate Transform to face target
+		targetRotation = Quaternion.LookRotation(SM.myInputs.PointerTarget);
+		targetRotation.x = 0;
+		targetRotation.z = 0;
 
 		Transition();
 	}
@@ -88,13 +92,14 @@ public class Enemy_MoveState : Enemy_State
 	{
 		if(moveTimer <= 0)
 		{
-			//swap back to idle
+			SM.SwitchState("Idle");
 		}
 	}
 
 	public override Vector3 MotionUpdate()
 	{
-		targetDirection = MathHelper.TransformAdjustedVector(ESM.transform, SM.myInputs.MoveInput);
+		SM.transform.rotation = Quaternion.Slerp(SM.transform.rotation, targetRotation, Time.fixedDeltaTime * turnSpeed);
+		targetDirection = MathHelper.TransformAdjustedVector(SM.transform, SM.myInputs.MoveInput);
 		Vector3 targetMotion = targetDirection * moveSpeed;
 		currentMotion.x = targetMotion.x;
 		currentMotion.z = targetMotion.z;
@@ -104,13 +109,14 @@ public class Enemy_MoveState : Enemy_State
 
 	public override void EndState()
 	{
+		SM.myInputs.ResetInput("Move");
 	}
 }
 
 public class Enemy_TurnState : Enemy_State
 {
 	Vector3 currentMotion;
-	float turnSpeed;
+	float turnSpeed = 6f;
 
 	public Enemy_TurnState(string name, EnemyStateMachine statemachine) : base(name, statemachine) { }
 

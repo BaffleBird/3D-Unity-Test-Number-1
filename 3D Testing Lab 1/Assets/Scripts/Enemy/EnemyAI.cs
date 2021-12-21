@@ -23,14 +23,15 @@ public class EnemyAI : MonoBehaviour
 	{
 		if (Keyboard.current.digit1Key.wasPressedThisFrame)
 		{
-			AICommand("Move");
 			//Randomly decide left or right
+			direction = Vector2.right * (Random.value > 0.5 ? 1 : -1);
+			AICommand("Move");
 		}
 
 		if (Keyboard.current.digit2Key.wasPressedThisFrame)
 		{
+			//Randomly decide forward or back (Or maybe just forward)
 			AICommand("Move");
-			//Randomly decide forward or back (Or maybe just forward
 		}
 	}
 }

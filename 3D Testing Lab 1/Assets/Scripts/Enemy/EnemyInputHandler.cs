@@ -15,13 +15,17 @@ public class EnemyInputHandler : InputHandler
 
 	private void Update()
 	{
-		pointerInput = (transform.position - enemyAI.target.position).normalized;
+		pointerTarget = (enemyAI.target.position - transform.position).normalized;
 	}
 
 	void OnAICommand(string signalID)
 	{
 		if (inputs.ContainsKey(signalID))
+		{
 			inputs[signalID] = true;
+			moveInput = enemyAI.direction;
+		}
+			
 	}
 
 	private void OnDisable()

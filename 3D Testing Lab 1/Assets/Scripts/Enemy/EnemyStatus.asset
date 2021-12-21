@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d857f3fe36204d438acabc3da988361, type: 3}
   m_Name: EnemyStatus
   m_EditorClassIdentifier: 
-  gravity: 0
+  gravity: 24
   currentState: 
   isStableGround: 0
   isTouchingWall: 0
   hitNormal: {x: 0, y: 0, z: 0}
-  currentMovement: {x: 0, y: 0, z: 0}
+  currentMovement: {x: 0.000000022351738, y: -24, z: 6}
