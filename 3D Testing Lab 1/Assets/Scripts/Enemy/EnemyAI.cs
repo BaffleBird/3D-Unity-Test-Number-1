@@ -6,8 +6,7 @@ using UnityEngine.InputSystem;
 public class EnemyAI : MonoBehaviour
 {
 	public Transform target;
-
-	public Vector2 direction;
+	[HideInInspector]public Vector2 direction;
 
 	#region TestDelegate
 	public delegate void Command(string signalID);
@@ -31,7 +30,14 @@ public class EnemyAI : MonoBehaviour
 		if (Keyboard.current.digit2Key.wasPressedThisFrame)
 		{
 			//Randomly decide forward or back (Or maybe just forward)
+			direction = Vector2.up;
 			AICommand("Move");
+		}
+
+		if (Keyboard.current.digit3Key.wasPressedThisFrame)
+		{
+			//Randomly decide forward or back (Or maybe just forward)
+			AICommand("Turn");
 		}
 	}
 }

@@ -35,10 +35,10 @@ public class Enemy_IdleState : Enemy_State
 	public override void Transition()
 	{
 		if (SM.myInputs.GetInput("Move"))
-		{
 			SM.SwitchState("Move");
-		}
-			
+		else if (SM.myInputs.GetInput("Turn"))
+			SM.SwitchState("Turn");
+
 	}
 
 	public override Vector3 MotionUpdate()
@@ -56,8 +56,8 @@ public class Enemy_IdleState : Enemy_State
 
 public class Enemy_MoveState : Enemy_State
 {
-	float moveSpeed = 6f;
-	float turnSpeed = 6f;
+	float moveSpeed = 3f;
+	float turnSpeed = 3f;
 	float moveTimer = 0f;
 
 	Vector3 currentMotion;
@@ -70,7 +70,10 @@ public class Enemy_MoveState : Enemy_State
 	{
 		currentMotion = SM.myStatus.currentMovement;
 		currentMotion.y = 0;
-		moveTimer = 5f;
+
+		moveSpeed = ESM.spiderStats.moveSpeed;
+		turnSpeed = ESM.spiderStats.turnSpeed;
+		moveTimer = Random.Range(3,5);
 
 		//Have an target point that lerps towards the player position.
 		//Then Rotate Transform to face that target point
@@ -98,7 +101,7 @@ public class Enemy_MoveState : Enemy_State
 
 	public override Vector3 MotionUpdate()
 	{
-		SM.transform.rotation = Quaternion.Slerp(SM.transform.rotation, targetRotation, Time.fixedDeltaTime * turnSpeed);
+		SM.transform.rotation = Quaternion.RotateTowards(SM.transform.rotation, targetRotation, Time.fixedDeltaTime * turnSpeed);
 		targetDirection = MathHelper.TransformAdjustedVector(SM.transform, SM.myInputs.MoveInput);
 		Vector3 targetMotion = targetDirection * moveSpeed;
 		currentMotion.x = targetMotion.x;
@@ -115,8 +118,11 @@ public class Enemy_MoveState : Enemy_State
 
 public class Enemy_TurnState : Enemy_State
 {
+	float turnSpeed = 0.1f;
+	float moveTimer = 0f;
+
 	Vector3 currentMotion;
-	float turnSpeed = 6f;
+	Quaternion targetRotation;
 
 	public Enemy_TurnState(string name, EnemyStateMachine statemachine) : base(name, statemachine) { }
 
@@ -124,27 +130,38 @@ public class Enemy_TurnState : Enemy_State
 	{
 		currentMotion = Vector3.zero;
 		currentMotion.y = 0;
+
+		turnSpeed = ESM.spiderStats.turnSpeed * 1.2f;
+		moveTimer = Random.Range(3, 5);
 	}
 
 	public override void UpdateState()
 	{
-		
+		moveTimer -= Time.deltaTime;
+		//Rotate Transform to face target
+		targetRotation = Quaternion.LookRotation(SM.myInputs.PointerTarget);
+		targetRotation.x = 0;
+		targetRotation.z = 0;
+
 		Transition();
 	}
 
 	public override void Transition()
 	{
-
+		if (moveTimer <= 0 || (Quaternion.Angle(SM.transform.rotation, targetRotation) <= 3))
+			SM.SwitchState("Idle");
 	}
 
 	public override Vector3 MotionUpdate()
 	{
+		SM.transform.rotation = Quaternion.RotateTowards(SM.transform.rotation, targetRotation, Time.fixedDeltaTime * turnSpeed);
 		currentMotion.y = -SM.myStatus.Gravity;
 		return currentMotion;
 	}
 
 	public override void EndState()
 	{
+		SM.myInputs.ResetInput("Turn");
 	}
 }
 
