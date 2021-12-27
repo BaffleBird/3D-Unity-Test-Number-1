@@ -10,12 +10,13 @@ public class EnemyInputHandler : InputHandler
 	{
 		inputs.Add("Move", false);
 		inputs.Add("Turn", false);
+		inputs.Add("Leap", false);
 		enemyAI.SignalCommand += OnAICommand;
 	}
 
 	private void Update()
 	{
-		pointerTarget = (enemyAI.target.position - transform.position).normalized;
+		pointerTarget = enemyAI.target.position;
 	}
 
 	void OnAICommand(string signalID)
@@ -25,7 +26,6 @@ public class EnemyInputHandler : InputHandler
 			inputs[signalID] = true;
 			moveInput = enemyAI.direction;
 		}
-			
 	}
 
 	private void OnDisable()

@@ -29,15 +29,18 @@ public class EnemyAI : MonoBehaviour
 
 		if (Keyboard.current.digit2Key.wasPressedThisFrame)
 		{
-			//Randomly decide forward or back (Or maybe just forward)
 			direction = Vector2.up;
 			AICommand("Move");
 		}
 
 		if (Keyboard.current.digit3Key.wasPressedThisFrame)
 		{
-			//Randomly decide forward or back (Or maybe just forward)
 			AICommand("Turn");
+		}
+
+		if (Keyboard.current.digit4Key.wasPressedThisFrame)
+		{
+			AICommand("Leap");
 		}
 	}
 }

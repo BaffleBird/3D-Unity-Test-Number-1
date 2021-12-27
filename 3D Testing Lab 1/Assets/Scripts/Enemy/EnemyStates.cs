@@ -38,7 +38,9 @@ public class Enemy_IdleState : Enemy_State
 			SM.SwitchState("Move");
 		else if (SM.myInputs.GetInput("Turn"))
 			SM.SwitchState("Turn");
-
+		else if (SM.myInputs.GetInput("Leap"))
+			SM.SwitchState("Leap");
+			
 	}
 
 	public override Vector3 MotionUpdate()
@@ -51,6 +53,7 @@ public class Enemy_IdleState : Enemy_State
 
 	public override void EndState()
 	{
+
 	}
 }
 
@@ -84,7 +87,8 @@ public class Enemy_MoveState : Enemy_State
 	{
 		moveTimer -= Time.deltaTime;
 		//Rotate Transform to face target
-		targetRotation = Quaternion.LookRotation(SM.myInputs.PointerTarget);
+
+		targetRotation = Quaternion.LookRotation((SM.myInputs.PointerTarget - SM.transform.position).normalized);
 		targetRotation.x = 0;
 		targetRotation.z = 0;
 
@@ -139,7 +143,7 @@ public class Enemy_TurnState : Enemy_State
 	{
 		moveTimer -= Time.deltaTime;
 		//Rotate Transform to face target
-		targetRotation = Quaternion.LookRotation(SM.myInputs.PointerTarget);
+		targetRotation = Quaternion.LookRotation((SM.myInputs.PointerTarget - SM.transform.position).normalized);
 		targetRotation.x = 0;
 		targetRotation.z = 0;
 
@@ -165,6 +169,60 @@ public class Enemy_TurnState : Enemy_State
 	}
 }
 
-//Crab Walk in any direction
+public class Enemy_LeapState : Enemy_State
+{
+	Vector3 currentMotion = new Vector3();
+	float jumpCounter;
+	public Enemy_LeapState(string name, EnemyStateMachine statemachine) : base(name, statemachine) { }
 
-//Leap
+	public override void StartState()
+	{
+		currentMotion = Vector3.zero;
+		jumpCounter = 0.1f;
+
+		//Get Target Position from InputHandler PointerTarget
+		//Get Jump Angle and Leap Gravity from SpiderStats
+		float leapAngleRad = ESM.spiderStats.leapAngle * Mathf.Deg2Rad;
+
+		//Separate Vertical and Lateral Components of Target Position
+		Vector3 targetVertical = MathHelper.ZeroVector(ESM.myInputs.PointerTarget, true, false, true);
+		Vector3 targetLateral = MathHelper.ZeroVector(ESM.myInputs.PointerTarget, false, true, false);
+		Vector3 currentLateral = MathHelper.ZeroVector(SM.transform.position, false, true, false);
+
+		//Get the Vertical and Lateral distances
+		float latDistance = Vector3.Distance(targetLateral, currentLateral);
+		float yDistance = SM.transform.position.y - targetVertical.y;
+
+		//Calculate Leap Vector
+		float startVelocity = (1/Mathf.Cos(leapAngleRad)) * (1 / Mathf.Cos(leapAngleRad)) * Mathf.Sqrt((0.5f * ESM.spiderStats.leapGravity * Mathf.Pow(latDistance, 2)) / (latDistance * Mathf.Tan(leapAngleRad) + yDistance));
+		currentMotion = new Vector3(0, startVelocity * Mathf.Sin(leapAngleRad), startVelocity * Mathf.Cos(leapAngleRad));
+
+		//Rotate Vector to towards target location
+		float angleBetween = Vector3.Angle(Vector3.forward, targetLateral - currentLateral) * (targetLateral.x > currentLateral.x ? 1 : -1);
+		currentMotion = Quaternion.AngleAxis(angleBetween, Vector3.up) * currentMotion;
+	}
+
+	public override void UpdateState()
+	{
+		jumpCounter -= Time.deltaTime;
+		Transition();
+	}
+
+	public override void Transition()
+	{
+		//Return to IdleState On Impact for now
+		if (SM.myCController.isGrounded && jumpCounter <= 0)
+			SM.SwitchState("Idle");
+	}
+
+	public override Vector3 MotionUpdate()
+	{
+		currentMotion.y -= ESM.spiderStats.leapGravity * Time.fixedDeltaTime;
+		return currentMotion;
+	}
+
+	public override void EndState()
+	{
+		SM.myInputs.ResetInput("Leap");
+	}
+}

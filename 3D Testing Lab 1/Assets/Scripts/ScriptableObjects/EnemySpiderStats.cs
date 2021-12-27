@@ -8,4 +8,6 @@ public class EnemySpiderStats : ScriptableObject
 
 	public float moveSpeed = 0;
 	public float turnSpeed = 0;
+	public float leapAngle = 0;
+	public float leapGravity = 0;
 }

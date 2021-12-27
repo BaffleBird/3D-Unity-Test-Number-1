@@ -12,5 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7522dec8d687d6541872f7283d96cbbe, type: 3}
   m_Name: SpiderStats
   m_EditorClassIdentifier: 
-  moveSpeed: 0
-  turnSpeed: 0
+  moveSpeed: 3
+  turnSpeed: 24
+  leapAngle: 55
+  leapGravity: 40

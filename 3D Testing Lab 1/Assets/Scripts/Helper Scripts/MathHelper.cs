@@ -49,6 +49,11 @@ public static class MathHelper
 		return new Vector2(0, vector.y);
 	}
 
+	public static Vector3 ZeroVector(Vector3 vector, bool x, bool y, bool z)
+	{
+		return new Vector3(x ? 0 : vector.x, y ? 0 : vector.z, x ? 0 : vector.z);
+	}
+
 	//Aligns a vector to Camera direction
 	public static Vector3 CameraAdjustedVector(Camera targetCamera, Vector2 movementVector)
 	{
