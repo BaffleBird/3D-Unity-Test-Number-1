@@ -182,7 +182,7 @@ public class Enemy_LeapState : Enemy_State
 
 		//Get Target Position from InputHandler PointerTarget
 		//Get Jump Angle and Leap Gravity from SpiderStats
-		float leapAngleRad = ESM.spiderStats.leapAngle * Mathf.Deg2Rad;
+		float angle = ESM.spiderStats.leapAngle * Mathf.Deg2Rad;
 
 		//Separate Vertical and Lateral Components of Target Position
 		Vector3 targetVertical = MathHelper.ZeroVector(ESM.myInputs.PointerTarget, true, false, true);
@@ -190,12 +190,12 @@ public class Enemy_LeapState : Enemy_State
 		Vector3 currentLateral = MathHelper.ZeroVector(SM.transform.position, false, true, false);
 
 		//Get the Vertical and Lateral distances
-		float latDistance = Vector3.Distance(targetLateral, currentLateral);
-		float yDistance = SM.transform.position.y - targetVertical.y;
+		Vector3 offset = ESM.myInputs.PointerTarget - SM.transform.position;
+		float distance = offset.magnitude * 2;
 
 		//Calculate Leap Vector
-		float startVelocity = (1/Mathf.Cos(leapAngleRad)) * (1 / Mathf.Cos(leapAngleRad)) * Mathf.Sqrt((0.5f * ESM.spiderStats.leapGravity * Mathf.Pow(latDistance, 2)) / (latDistance * Mathf.Tan(leapAngleRad) + yDistance));
-		currentMotion = new Vector3(0, startVelocity * Mathf.Sin(leapAngleRad), startVelocity * Mathf.Cos(leapAngleRad));
+		float velocity = (distance * Mathf.Sqrt(ESM.spiderStats.leapGravity) * Mathf.Sqrt(1 / Mathf.Cos(angle))) / Mathf.Sqrt(2 * distance * Mathf.Sin(angle) + 2 * -offset.y * Mathf.Cos(angle));
+		currentMotion = new Vector3(0, velocity * Mathf.Sin(angle), velocity * Mathf.Cos(angle));
 
 		//Rotate Vector to towards target location
 		float angleBetween = Vector3.Angle(Vector3.forward, targetLateral - currentLateral) * (targetLateral.x > currentLateral.x ? 1 : -1);

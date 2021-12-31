@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 3
   turnSpeed: 24
-  leapAngle: 55
+  leapAngle: 60
   leapGravity: 40
