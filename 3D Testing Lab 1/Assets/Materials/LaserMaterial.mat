@@ -21,7 +21,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: LaserMaterial
-  m_Shader: {fileID: -6465566751694194690, guid: b2c80dded3923b549a1d0f9792ec6822, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: 6ae0ffc4a792d1d4dbeb2065f4fac900, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -38,6 +38,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - Texture2D_92bb666e10764c5c8588eea6f1820f4d:
         m_Texture: {fileID: 2800000, guid: 1b9bd59bdf1e48f4790f5aba01ceb1f7, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - Texture2D_f038b9df346a4965b3c44a1568414a21:
+        m_Texture: {fileID: 2800000, guid: 52925e0551574d745a8968485d4d87b6, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BaseMap:
@@ -84,6 +88,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Texture2DAsset_cec04260297a415d989b123054828acd_Out_0:
+        m_Texture: {fileID: 10300, guid: 0000000000000000f000000000000000, type: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -100,6 +108,9 @@ Material:
     - Vector1_778d5ef37bd54e718efc5d01c2a9e4a8: 32
     - Vector1_88de47df79c04076914fbcec2b21e27f: 2
     - Vector1_8eda1041ce2a473f92f440087805c658: 0.09
+    - Vector1_caad9a6556e245a3a835946cbcf9506d: 1
+    - Vector1_e15ef0d8145748f08c818d33630430f5: 22.91
+    - Vector1_e3081cd2fde342db860fec5fb492fae0: -0.15
     - Vector1_fde079e6edea4d86b05250ad9f3401d5: 0.2
     - _AlphaClip: 0
     - _Blend: 0
@@ -129,6 +140,8 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - Color_2b01cdb2f6124144bc7f039ab58c8383: {r: 10.514364, g: 3.8034155, b: 2.9261675, a: 1}
+    - Color_39970aaa012340aeac9396ba534cb846: {r: 0.46457824, g: 3.3962264, b: 2.0081832, a: 0}
+    - Vector2_57e9a96b00a94afd9ab8269e2032aaa3: {r: 8, g: 0, b: 0, a: 0}
     - Vector2_79c55ea1ff354601bd1b8dab1da53051: {r: -0.5, g: 0, b: 0, a: 0}
     - Vector2_b4021aeb24f74bc5a978368026662035: {r: -0.7, g: 0, b: 0, a: 0}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}

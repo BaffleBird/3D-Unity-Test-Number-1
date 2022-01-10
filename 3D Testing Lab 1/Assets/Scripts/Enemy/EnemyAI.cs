@@ -42,5 +42,10 @@ public class EnemyAI : MonoBehaviour
 		{
 			AICommand("Leap");
 		}
+
+		if (Keyboard.current.digit5Key.wasPressedThisFrame)
+		{
+			AICommand("Attack1");
+		}
 	}
 }

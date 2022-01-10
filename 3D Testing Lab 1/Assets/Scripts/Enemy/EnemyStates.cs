@@ -40,7 +40,9 @@ public class Enemy_IdleState : Enemy_State
 			SM.SwitchState("Turn");
 		else if (SM.myInputs.GetInput("Leap"))
 			SM.SwitchState("Leap");
-			
+		else if (SM.myInputs.GetInput("Attack1"))
+			SM.SwitchState("Attack1");
+
 	}
 
 	public override Vector3 MotionUpdate()
@@ -224,5 +226,48 @@ public class Enemy_LeapState : Enemy_State
 	public override void EndState()
 	{
 		SM.myInputs.ResetInput("Leap");
+	}
+}
+
+public class Enemy_ShootState : Enemy_State
+{
+	Vector3 currentMotion;
+	float attackTime = 0;
+
+	public Enemy_ShootState(string name, EnemyStateMachine statemachine) : base(name, statemachine) { }
+
+	public override void StartState()
+	{
+		currentMotion = SM.myStatus.currentMovement;
+		currentMotion.y = 0;
+
+		attackTime = 3;
+		SM.FireSignal("Fire");
+	}
+
+	public override void UpdateState()
+	{
+		attackTime -= Time.deltaTime;
+		Transition();
+	}
+
+	public override void Transition()
+	{
+		if (attackTime <= 0)
+			SM.SwitchState("Idle");
+	}
+
+	public override Vector3 MotionUpdate()
+	{
+		Vector3 brakeVector = new Vector3(0, currentMotion.y, 0);
+		currentMotion = Vector3.Lerp(currentMotion, brakeVector, 0.1f);
+		currentMotion.y = -SM.myStatus.Gravity;
+		return currentMotion;
+	}
+
+	public override void EndState()
+	{
+		SM.FireSignal("Ceasefire");
+		SM.myInputs.ResetInput("Attack1");
 	}
 }
