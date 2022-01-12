@@ -241,7 +241,7 @@ public class Enemy_ShootState : Enemy_State
 		currentMotion = SM.myStatus.currentMovement;
 		currentMotion.y = 0;
 
-		attackTime = 3;
+		attackTime = 0.5f;
 		SM.FireSignal("Fire");
 	}
 
