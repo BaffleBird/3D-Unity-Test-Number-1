@@ -11,7 +11,7 @@ public class EnemyCannon : MonoBehaviour
 
     Vector3 targetPoint;
     Vector3 targetDirection;
-    bool laserOn = false;
+    float laserScale = 1;
 
     LayerMask laserMask;
 
@@ -29,59 +29,95 @@ public class EnemyCannon : MonoBehaviour
     {
         switch (signalID)
         {
-            case "Charge":
+            case "FireLaser":
+                StartCoroutine(ChargeLaser());
                 break;
-            case "Fire":
-                FireLaser();
-                break;
-            case "Ceasefire":
+            case "CeaseLaser":
                 CeaseLaser();
                 break;
             case "Cancel":
+                CeaseLaser();
                 break;
         }
     }
 
 	private void FixedUpdate()
 	{
-        RaycastHit hit;
-        if (Physics.Raycast(transform.position, targetDirection, out hit, 10, laserMask))
-		{
-            Vector3 newScale = laserBeam.transform.localScale;
-            newScale.z = Vector3.Distance(transform.position, targetPoint);
-            laserBeam.transform.localScale = newScale;
-            laserImpact.transform.position = hit.point;
-        }
-        else
-		{
-            Vector3 endPoint = transform.position + (targetDirection * 10);
-
-            Vector3 newScale = laserBeam.transform.localScale;
-            newScale.z = Vector3.Distance(transform.position, endPoint);
-            laserBeam.transform.localScale = newScale;
-            laserImpact.transform.position = endPoint;
-        }
     }
 
-    void FireLaser()
+    IEnumerator ChargeLaser()
 	{
-        laserOn = true;
+        float chargeTime = 2;
+        laserScale = 0.1f;
+        laserSource.Play();
 
+        while (chargeTime > 0)
+		{
+            chargeTime -= Time.deltaTime;
+            laserScale = Mathf.Lerp(laserScale, 4, 0.05f);
+            laserSource.transform.localScale = Vector3.one * laserScale;
+            yield return null;
+        }
+
+        StartCoroutine(FireLaser());
+	}
+
+    IEnumerator FireLaser()
+	{
+        // Targeting System
         targetPoint = CoreStateMachine.myInputs.PointerTarget;
         targetDirection = (targetPoint - transform.position).normalized;
         transform.rotation = Quaternion.LookRotation(targetDirection, Vector3.up);
-
-        laserSource.Play();
         laserBeam.gameObject.SetActive(true);
+        laserBeam.localScale = Vector3.one * 5;
         laserImpact.Play();
+
+        // Launch the laser with Scaling Magic
+        // * Use targetPoint as a projectile move it along the targetDirection at a rate of fireSpeed per frame
+        // * Stretch and thin laser until it reaches fireRange or strikes a surface (Linecast or Raycast will do)
+        // * Stick the Impact effect at the end of it all the way
+        float fireRange = 30;
+        float fireSpeed = 200;
+        float currentPosition = 0;
+        RaycastHit hit;
+
+        while(currentPosition < fireRange ||
+            !Physics.Linecast(transform.position, targetPoint, out hit, laserMask))
+		{
+            currentPosition += fireSpeed * Time.deltaTime;
+            targetPoint = transform.position + (targetDirection * currentPosition);
+
+            Vector3 newScale = laserBeam.transform.localScale;
+            newScale.z = Vector3.Distance(transform.position, targetPoint) * 0.95f;
+            newScale.x = Mathf.Lerp(newScale.x, 2f, 0.1f);
+            newScale.y = newScale.x;
+            laserBeam.transform.localScale = newScale;
+
+            laserImpact.transform.position = targetPoint;
+            yield return null;
+        }
+
+
+        // [Optional] Raycast and Sweep
+        // * Use an adjusted vector to aim to the left or right of the player
+        // * Smoothdamp or lerp the aim point across the player position and to the other side
+        // * Raycast all the way
+
+
+        // Disipate the Laser
+        // * Lerp the laser thickness (scale y and z) to zero
+        // * Lerp the AlphaClip of the Material to one
+
+
+        CeaseLaser();
     }
 
     void CeaseLaser()
 	{
+        //Scale laser components down
         laserSource.Stop();
         laserBeam.gameObject.SetActive(false);
         laserImpact.Stop();
-        laserOn = false;
     }
 
     private void OnDisable()

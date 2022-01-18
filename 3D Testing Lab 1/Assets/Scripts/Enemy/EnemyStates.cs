@@ -42,6 +42,8 @@ public class Enemy_IdleState : Enemy_State
 			SM.SwitchState("Leap");
 		else if (SM.myInputs.GetInput("Attack1"))
 			SM.SwitchState("Attack1");
+		else if (SM.myInputs.GetInput("Attack2"))
+			SM.SwitchState("Attack2");
 
 	}
 
@@ -229,12 +231,12 @@ public class Enemy_LeapState : Enemy_State
 	}
 }
 
-public class Enemy_ShootState : Enemy_State
+public class Enemy_LaserState : Enemy_State
 {
 	Vector3 currentMotion;
 	float attackTime = 0;
 
-	public Enemy_ShootState(string name, EnemyStateMachine statemachine) : base(name, statemachine) { }
+	public Enemy_LaserState(string name, EnemyStateMachine statemachine) : base(name, statemachine) { }
 
 	public override void StartState()
 	{
@@ -242,7 +244,7 @@ public class Enemy_ShootState : Enemy_State
 		currentMotion.y = 0;
 
 		attackTime = 0.5f;
-		SM.FireSignal("Fire");
+		SM.FireSignal("FireLaser");
 	}
 
 	public override void UpdateState()
@@ -267,7 +269,50 @@ public class Enemy_ShootState : Enemy_State
 
 	public override void EndState()
 	{
-		SM.FireSignal("Ceasefire");
+		SM.FireSignal("CeaseLaser");
 		SM.myInputs.ResetInput("Attack1");
+	}
+}
+
+public class Enemy_MissileState : Enemy_State
+{
+	Vector3 currentMotion;
+	float attackTime = 0;
+
+	public Enemy_MissileState(string name, EnemyStateMachine statemachine) : base(name, statemachine) { }
+
+	public override void StartState()
+	{
+		currentMotion = SM.myStatus.currentMovement;
+		currentMotion.y = 0;
+
+		attackTime = 0.5f;
+		SM.FireSignal("FireMissile");
+	}
+
+	public override void UpdateState()
+	{
+		attackTime -= Time.deltaTime;
+		Transition();
+	}
+
+	public override void Transition()
+	{
+		if (attackTime <= 0)
+			SM.SwitchState("Idle");
+	}
+
+	public override Vector3 MotionUpdate()
+	{
+		Vector3 brakeVector = new Vector3(0, currentMotion.y, 0);
+		currentMotion = Vector3.Lerp(currentMotion, brakeVector, 0.1f);
+		currentMotion.y = -SM.myStatus.Gravity;
+		return currentMotion;
+	}
+
+	public override void EndState()
+	{
+		SM.FireSignal("CeaseMissile");
+		SM.myInputs.ResetInput("Attack2");
 	}
 }

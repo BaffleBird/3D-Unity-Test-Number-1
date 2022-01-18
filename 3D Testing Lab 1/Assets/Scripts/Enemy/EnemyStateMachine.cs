@@ -15,7 +15,8 @@ public class EnemyStateMachine : StateMachine
 		States.Add("Move", new Enemy_MoveState("Move", this));
 		States.Add("Turn", new Enemy_TurnState("Turn", this));
 		States.Add("Leap", new Enemy_LeapState("Leap", this));
-		States.Add("Attack1", new Enemy_ShootState("Attack1", this));
+		States.Add("Attack1", new Enemy_LaserState("Attack1", this));
+		States.Add("Attack2", new Enemy_MissileState("Attack2", this));
 
 		currentState = States["Idle"];
 		_previousState = currentState.StateName;

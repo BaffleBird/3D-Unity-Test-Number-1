@@ -44,10 +44,10 @@ public class MissilePod : MonoBehaviour
     {
         switch (signalID)
         {
-            case "Fire":
+            case "FireMissile":
                 FireMissiles();
                 break;
-            case "Ceasefire":
+            case "CeaseMissile":
                 CeaseMissiles();
                 break;
         }

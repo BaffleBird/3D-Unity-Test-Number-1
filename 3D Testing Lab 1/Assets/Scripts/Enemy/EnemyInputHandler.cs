@@ -12,6 +12,7 @@ public class EnemyInputHandler : InputHandler
 		inputs.Add("Turn", false);
 		inputs.Add("Leap", false);
 		inputs.Add("Attack1", false);
+		inputs.Add("Attack2", false);
 		enemyAI.SignalCommand += OnAICommand;
 	}
 

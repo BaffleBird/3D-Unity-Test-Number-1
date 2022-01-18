@@ -4,7 +4,7 @@ using UnityEngine;
 
 public static class MathHelper
 {
-	//Scale a value within a given range into a new range
+	//Scale a value within a given range into a new range // Use mathf.inverselerp and lerp instead.
     public static float ScaleValue(float value, float currentMin, float currentMax, float newMin, float newMax)
 	{
 		//Remove the offset from the current min value and replace it with the new min

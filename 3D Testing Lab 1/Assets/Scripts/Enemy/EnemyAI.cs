@@ -47,5 +47,10 @@ public class EnemyAI : MonoBehaviour
 		{
 			AICommand("Attack1");
 		}
+
+		if (Keyboard.current.digit6Key.wasPressedThisFrame)
+		{
+			AICommand("Attack2");
+		}
 	}
 }
