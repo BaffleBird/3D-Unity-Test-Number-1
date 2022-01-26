@@ -1898,7 +1898,7 @@
     },
     "m_Name": "AlphaClip",
     "m_DefaultReferenceName": "Vector1_8f729900539343cbbb23b9ed89849240",
-    "m_OverrideReferenceName": "",
+    "m_OverrideReferenceName": "AlphaClip",
     "m_GeneratePropertyBlock": true,
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
