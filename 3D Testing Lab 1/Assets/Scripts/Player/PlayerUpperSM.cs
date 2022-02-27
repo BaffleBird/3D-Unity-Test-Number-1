@@ -266,7 +266,10 @@ public class PlayerUpper_ChargeState : State
 		if (SM.myInputs.GetInput("Shoot"))
 			SM.SwitchState("Cannon");
 		else if (!SM.myInputs.GetInput("Charge"))
+		{
+			USM.FireSignal("Cancel");
 			SM.SwitchState("StandyBy");
+		}
 	}
 
 	public override Vector3 MotionUpdate()
@@ -276,7 +279,6 @@ public class PlayerUpper_ChargeState : State
 
 	public override void EndState()
 	{
-		USM.FireSignal("Cancel");
 		USM.gunAnimator.SetBool("Shooting", false);
 	}
 }
@@ -296,6 +298,7 @@ public class PlayerUpper_CannonState : State
 	float rotaryAngle = 0;
 
 	float fireTime = 0;
+	bool firing = false;
 
 	public PlayerUpper_CannonState(string name, StateMachine stateMachine, PlayerUpperSM upperStateMachine) : base(name, stateMachine)
 	{
@@ -314,6 +317,7 @@ public class PlayerUpper_CannonState : State
 
 		//Firing Timer
 		fireTime = 2;
+		firing = false;
 
 		USM.FireSignal("ShiftCamera");
 	}
@@ -346,9 +350,10 @@ public class PlayerUpper_CannonState : State
 		//Interpolate the Aim Target there
 		USM.aimTarget.transform.position = Vector3.Lerp(USM.aimTarget.transform.position, USM.trueTarget.transform.position, Time.deltaTime * targetSpeed);
 
-		if (USM.animationRig.weight > 0.9f)
+		if (USM.animationRig.weight > 0.9f && !firing)
 		{
-			USM.FireSignal("Release");
+			firing = true;
+			USM.FireSignal("FireCannon");
 		}
 
 		//Adjust Body target to match

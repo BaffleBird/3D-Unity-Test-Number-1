@@ -14,26 +14,11 @@ public class ParticleLauncher : MonoBehaviour
     [SerializeField] VisualEffect muzzleFlash;
     [SerializeField] VisualEffect bulletImpact;
 
-    [Header("Light Stuff")]
-    [SerializeField] Light muzzleLight;
-    [SerializeField] float lightMaxIntensity = 0.64f;
-
-    [Header("Laser Stuff")]
-    [SerializeField] VisualEffect cannonOrb;
-    [SerializeField] VisualEffect beam;
-    [SerializeField] VisualEffect smoke;
-    float impactTimer = 0;
-
     List<ParticleCollisionEvent> collisionEvents = new List<ParticleCollisionEvent>();
 
     [SerializeField]float fireRate = 0.08f;
     float timer = 0;
     bool fire;
-
-    bool charge;
-    float strength = 0;
-    bool fireCannon;
-    bool cannonFired;
 
     void Start()
     {
@@ -47,7 +32,6 @@ public class ParticleLauncher : MonoBehaviour
 		{
             if (target)
                 transform.rotation = Quaternion.LookRotation(target.position - transform.position);
-            muzzleLight.intensity = lightMaxIntensity;
             if (timer <= 0)
 			{
                 particleLauncher.Emit(1);
@@ -55,53 +39,7 @@ public class ParticleLauncher : MonoBehaviour
                 timer = fireRate;
             }
         }
-        else if (fireCannon)
-		{
-            if(!cannonFired)
-			{
-                beam.Play();
-                impactTimer = 1.85f;
-                cannonFired = true;
-            }
-		}
-        else if (charge)
-		{
-            strength = Mathf.Lerp(strength, 1, 0.005f);
-            cannonOrb.SetFloat("Strength", strength);
-            muzzleLight.intensity = lightMaxIntensity;
-        }
-        else
-		{
-            cannonFired = false;
-            strength = Mathf.Lerp(strength, 0, 0.01f);
-            cannonOrb.SetFloat("Strength", strength);
-            muzzleLight.intensity = 0;
-            if (strength < 0.05f)
-                cannonOrb.Stop();
-        }
-
-        BeamImpact();
     }
-
-    void BeamImpact()
-	{
-        if (impactTimer > 0)
-		{
-            LayerMask mask = LayerMask.GetMask("Terrain");
-            RaycastHit hit;
-            impactTimer -= Time.deltaTime;
-            if(Physics.Linecast(transform.position, target.position, out hit, mask))
-			{
-                smoke.transform.position = hit.point;
-                smoke.Play();
-            }
-            else
-                smoke.Stop();
-        }
-        else
-            smoke.Stop();
-        
-	}
 
     private void OnDisable()
     {
@@ -117,17 +55,6 @@ public class ParticleLauncher : MonoBehaviour
                 break;
             case "Ceasefire":
                 fire = false;
-                fireCannon = false;
-                break;
-            case "Charge":
-                charge = true;
-                cannonOrb.Play();
-                break;
-            case "Release":
-                fireCannon = true;
-                break;
-            case "Cancel":
-                charge = false;
                 break;
         }
     }

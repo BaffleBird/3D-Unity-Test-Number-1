@@ -43,10 +43,6 @@ public class EnemyCannon : MonoBehaviour
         }
     }
 
-	private void FixedUpdate()
-	{
-    }
-
     IEnumerator ChargeLaser()
 	{
         float chargeTime = 2;
@@ -94,6 +90,7 @@ public class EnemyCannon : MonoBehaviour
             Vector3 newScale = laserBeam.transform.localScale;
             newScale.z = Vector3.Distance(transform.position, targetPoint) * 0.95f;
             newScale.x = Mathf.Lerp(newScale.x, 2f, 0.1f);
+            newScale.y = newScale.x;
             
             laserBeam.transform.localScale = newScale;
 
