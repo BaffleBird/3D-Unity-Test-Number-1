@@ -62,6 +62,7 @@ public class PlayerCannon : MonoBehaviour
 		{
             chargeLevel += Time.deltaTime;
             laserSource.SetFloat("Strength", chargeLevel);
+            AlmightySingleton.Instance.PlayerStats.SetCharge(chargeLevel);
             yield return null;
         }
 
@@ -75,6 +76,7 @@ public class PlayerCannon : MonoBehaviour
         {
             chargeLevel -= Time.deltaTime;
             laserSource.SetFloat("Strength", chargeLevel);
+            AlmightySingleton.Instance.PlayerStats.SetCharge(chargeLevel);
             yield return null;
         }
         chargeLevel = 0;
@@ -86,13 +88,17 @@ public class PlayerCannon : MonoBehaviour
     {
         Vector3 targetPoint = target.position;
 
-		laserBeam.gameObject.SetActive(true);
+        laserSource.SetFloat("Strength", 0);
+        laserSource.Stop();
+        laserBeam.gameObject.SetActive(true);
         laserBeam.localScale = Vector3.one * 5;
 
         float fireRange = 50;
         float fireSpeed = 300;
         float currentPosition = 0;
         RaycastHit hit;
+
+        AlmightySingleton.Instance.PlayerStats.FireCharge();
 
         while (currentPosition < fireRange)
         {
@@ -104,7 +110,7 @@ public class PlayerCannon : MonoBehaviour
 
             Vector3 newScale = laserBeam.transform.localScale;
             newScale.z = Vector3.Distance(transform.position, targetPoint) * 0.95f;
-            newScale.x = Mathf.Lerp(newScale.x, 1.5f, 0.5f);
+            newScale.x = Mathf.Lerp(newScale.x, 2f * chargeLevel, 0.5f);
             newScale.y = newScale.x;
 
             laserBeam.transform.localScale = newScale;
@@ -139,6 +145,9 @@ public class PlayerCannon : MonoBehaviour
     {
         float dissipateTime = 1;
         float dissipate = 0;
+
+        AlmightySingleton.Instance.PlayerStats.ReleaseCharge();
+
         while (dissipateTime > 0)
         {
             dissipateTime -= Time.deltaTime;

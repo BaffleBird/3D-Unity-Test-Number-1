@@ -97,9 +97,9 @@ public class PlayerUpper_StandyByState : State
 
 	public override void Transition()
 	{
-		if (SM.myInputs.GetInput("Shoot") && SM.myStatus.GetCooldown("Laser"))
+		if (SM.myInputs.GetInput("Shoot") && SM.myStatus.GetCooldown("Laser") && (!AlmightySingleton.Instance.PlayerStats.Overheated || AlmightySingleton.Instance.PlayerStats.OverCharged))
 			SM.SwitchState("Shoot");
-		else if (SM.myInputs.GetInput("Charge") && SM.myStatus.GetCooldown("Laser"))
+		else if (SM.myInputs.GetInput("Charge") && SM.myStatus.GetCooldown("Laser") && (!AlmightySingleton.Instance.PlayerStats.Overheated || AlmightySingleton.Instance.PlayerStats.OverCharged))
 			SM.SwitchState("Charge");
 	}
 
@@ -172,7 +172,10 @@ public class PlayerUpper_ShootState : State
 		USM.aimTarget.transform.position = Vector3.Lerp(USM.aimTarget.transform.position, USM.trueTarget.transform.position, Time.deltaTime * targetSpeed);
 
 		if (USM.animationRig.weight > 0.9f)
+		{
 			USM.FireSignal("Fire");
+			AlmightySingleton.Instance.PlayerStats.HeatUp(6f * Time.deltaTime);
+		}
 		else
 			USM.FireSignal("CeaseFire");
 
@@ -209,7 +212,7 @@ public class PlayerUpper_ShootState : State
 
 	public override void Transition()
 	{
-		if (!SM.myInputs.GetInput("Shoot"))
+		if (!SM.myInputs.GetInput("Shoot") || AlmightySingleton.Instance.PlayerStats.Overheated)
 			SM.SwitchState("StandyBy"); SM.FireSignal("CeaseFire");
 	}
 

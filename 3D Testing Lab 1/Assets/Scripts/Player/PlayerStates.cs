@@ -33,7 +33,7 @@ public class Player_IdleState : State
 			SM.SwitchState("Jump");
 		else if (!SM.myCController.isGrounded)
 			SM.SwitchState("Jump");
-		else if (SM.myInputs.GetInput("Dodge"))
+		else if (SM.myInputs.GetInput("Dodge") && (!AlmightySingleton.Instance.PlayerStats.Overheated || AlmightySingleton.Instance.PlayerStats.OverCharged))
 			SM.SwitchState("Dodge");
 		else if (SM.myInputs.MoveInput != Vector2.zero)
 			SM.SwitchState("Move");
@@ -90,7 +90,7 @@ public class Player_MoveState : State
 			SM.SwitchState("Slide");
 		else if (SM.myInputs.GetInput("Jump") || !SM.myCController.isGrounded)
 			SM.SwitchState("Jump");
-		else if (SM.myInputs.GetInput("Dodge"))
+		else if (SM.myInputs.GetInput("Dodge") && (!AlmightySingleton.Instance.PlayerStats.Overheated || AlmightySingleton.Instance.PlayerStats.OverCharged))
 			SM.SwitchState("Dodge");
 		else if (SM.myInputs.MoveInput == Vector2.zero && currentMotion.sqrMagnitude != 0)
 			SM.SwitchState("Idle");
@@ -199,6 +199,8 @@ public class Player_DodgeState : State
 			targetDirection = SM.myModel.transform.forward;
 		currentMotion = Vector3.Lerp(currentMotion, targetDirection, 0.25f).normalized * dodgeSpeed;
 
+		AlmightySingleton.Instance.PlayerStats.HeatUp(10f * Time.deltaTime);
+
 		Transition();
 	}
 
@@ -208,7 +210,7 @@ public class Player_DodgeState : State
 			SM.SwitchState("Slide");
 		else if (SM.myInputs.GetInput("Jump") && SM.myCController.isGrounded)
 			SM.SwitchState("Jump");
-		else if (dodgeCounter <= 0 && !SM.myInputs.GetInput("DodgeHold"))
+		else if ((dodgeCounter <= 0 && !SM.myInputs.GetInput("DodgeHold")) || AlmightySingleton.Instance.PlayerStats.Overheated)
 		{
 			if (SM.myCController.isGrounded && SM.myInputs.MoveInput != Vector2.zero)
 				SM.SwitchState("Sprint");
@@ -279,7 +281,7 @@ public class Player_SprintState : State
 			SM.SwitchState("Slide");
 		else if (SM.myInputs.GetInput("Jump") || !SM.myCController.isGrounded)
 			SM.SwitchState("Jump");
-		else if (SM.myInputs.GetInput("Dodge"))
+		else if (SM.myInputs.GetInput("Dodge") && (!AlmightySingleton.Instance.PlayerStats.Overheated || AlmightySingleton.Instance.PlayerStats.OverCharged))
 			SM.SwitchState("Dodge");
 		else if (SM.myInputs.GetInput("Shoot"))
 			SM.SwitchState("Move");
@@ -373,7 +375,7 @@ public class Player_JumpState : State
 			SM.SwitchState("WallJump");
 		else if (SM.myInputs.GetInput("Jump") && !SM.myStatus.GetCooldown("Coyote"))
 			SM.SwitchState("Jump");
-		else if (SM.myInputs.GetInput("Dodge"))
+		else if (SM.myInputs.GetInput("Dodge") && (!AlmightySingleton.Instance.PlayerStats.Overheated || AlmightySingleton.Instance.PlayerStats.OverCharged))
 			SM.SwitchState("Dodge");
 		else if (SM.myCController.isGrounded)
 		{
@@ -565,7 +567,7 @@ public class Player_WallJumpState : State
 			SM.SwitchState("WallJump");
 			SM.myStatus.SetCooldown("WallJump", 0.3f);
 		}
-		else if (SM.myInputs.GetInput("Dodge"))
+		else if (SM.myInputs.GetInput("Dodge") && (!AlmightySingleton.Instance.PlayerStats.Overheated || AlmightySingleton.Instance.PlayerStats.OverCharged))
 		{
 			SM.SwitchState("Dodge");
 			SM.myStatus.SetCooldown("WallJump", 2f);
